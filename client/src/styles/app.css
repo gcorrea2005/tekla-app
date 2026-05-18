@@ -151,6 +151,32 @@ button:disabled {
   margin-bottom: 0;
 }
 
+.panel-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.search-input {
+  padding: 10px 14px;
+  background: #0f1419;
+  border: 1px solid #2a3a4a;
+  border-radius: 8px;
+  color: #e1e8ed;
+  font-size: 0.9em;
+  min-width: 280px;
+  transition: border-color 0.2s;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #00bfff;
+}
+
+.search-input::placeholder {
+  color: #556677;
+}
+
 .empty {
   color: #556677;
   text-align: center;

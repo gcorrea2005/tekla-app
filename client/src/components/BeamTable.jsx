@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 function parsePartNum(partMark) {
   if (!partMark) return Infinity;
@@ -13,7 +13,20 @@ function levelOrder(level) {
 }
 
 export function BeamTable({ objects, loading, onLoad, selected, onSelect }) {
-  const sorted = [...objects].sort((a, b) => {
+  const [search, setSearch] = useState('');
+
+  const filtered = objects.filter((obj) => {
+    if (!search) return true;
+    const q = search.toLowerCase();
+    return (
+      (obj.partMark || '').toLowerCase().includes(q) ||
+      (obj.level || '').toLowerCase().includes(q) ||
+      (obj.cota || '').toLowerCase().includes(q) ||
+      (obj.profile || '').toLowerCase().includes(q)
+    );
+  });
+
+  const sorted = [...filtered].sort((a, b) => {
     const la = levelOrder(a.level);
     const lb = levelOrder(b.level);
     if (la !== lb) return la.localeCompare(lb);
@@ -24,9 +37,18 @@ export function BeamTable({ objects, loading, onLoad, selected, onSelect }) {
     <section className="panel">
       <div className="panel-header">
         <h2>Elementos del Modelo</h2>
-        <button onClick={onLoad} disabled={loading}>
-          {loading ? 'Cargando...' : 'Cargar Seleccionados'}
-        </button>
+        <div className="panel-controls">
+          <input
+            type="text"
+            className="search-input"
+            placeholder="Buscar por parte, nivel, cota o perfil..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+          <button onClick={onLoad} disabled={loading}>
+            {loading ? 'Cargando...' : 'Cargar Seleccionados'}
+          </button>
+        </div>
       </div>
 
       {sorted.length === 0 ? (

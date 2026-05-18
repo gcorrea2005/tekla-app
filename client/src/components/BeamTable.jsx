@@ -41,7 +41,6 @@ export function BeamTable({ objects, loading, onLoad, selected, onSelect }) {
                 <th>Cota</th>
                 <th>Parte</th>
                 <th>Perfil</th>
-                <th>Material</th>
               </tr>
             </thead>
             <tbody>
@@ -62,7 +61,6 @@ export function BeamTable({ objects, loading, onLoad, selected, onSelect }) {
                   <td>{obj.cota}</td>
                   <td>{obj.partMark}</td>
                   <td>{obj.profile}</td>
-                  <td>{obj.material}</td>
                 </tr>
               ))}
             </tbody>

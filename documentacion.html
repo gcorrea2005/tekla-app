@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tekla Connection Manager - Documentacion</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            line-height: 1.7;
+            color: #e1e8ed;
+            background: #0f1419;
+        }
+        .container { max-width: 960px; margin: 0 auto; padding: 40px 20px; }
+        header {
+            text-align: center;
+            padding: 50px 30px;
+            background: linear-gradient(135deg, #1a2332 0%, #0d1b2a 100%);
+            border-radius: 16px;
+            margin-bottom: 40px;
+            border: 1px solid #2a3a4a;
+        }
+        header h1 { color: #00bfff; font-size: 2.2em; margin-bottom: 8px; }
+        header p { color: #8899aa; }
+        .badge {
+            display: inline-block;
+            background: rgba(0,191,255,0.1);
+            color: #00bfff;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            margin: 3px;
+        }
+        section {
+            background: #1a2332;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 24px;
+            border: 1px solid #2a3a4a;
+        }
+        h2 { color: #00bfff; font-size: 1.5em; margin-bottom: 16px; border-bottom: 2px solid rgba(0,191,255,0.2); padding-bottom: 8px; }
+        h3 { color: #a78bfa; font-size: 1.15em; margin: 20px 0 10px; }
+        p, li { color: #c0d0e0; }
+        p { margin-bottom: 12px; }
+        ul, ol { padding-left: 24px; margin: 10px 0; }
+        li { margin-bottom: 6px; }
+        code {
+            background: rgba(0,191,255,0.1);
+            color: #00bfff;
+            padding: 2px 7px;
+            border-radius: 4px;
+            font-family: 'Consolas', monospace;
+            font-size: 0.9em;
+        }
+        pre {
+            background: #0d1117;
+            border: 1px solid #2a3a4a;
+            border-radius: 8px;
+            padding: 18px;
+            overflow-x: auto;
+            margin: 12px 0;
+        }
+        pre code { background: none; color: #e6edf3; padding: 0; font-size: 0.85em; }
+        .diagram {
+            background: #0d1117;
+            border: 1px solid #2a3a4a;
+            border-radius: 8px;
+            padding: 24px;
+            text-align: center;
+            font-family: 'Consolas', monospace;
+            color: #00bfff;
+            margin: 16px 0;
+            line-height: 2;
+        }
+        .diagram .arrow { color: #a78bfa; }
+        table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+        th, td { padding: 10px 14px; text-align: left; border-bottom: 1px solid #2a3a4a; }
+        th { color: #00bfff; background: rgba(0,191,255,0.05); font-size: 0.85em; text-transform: uppercase; }
+        .file-tree {
+            background: #0d1117;
+            border: 1px solid #2a3a4a;
+            border-radius: 8px;
+            padding: 20px;
+            font-family: 'Consolas', monospace;
+            font-size: 0.88em;
+            color: #8b949e;
+            margin: 12px 0;
+        }
+        .file-tree .folder { color: #79c0ff; }
+        .file-tree .file { color: #e6edf3; }
+        .highlight {
+            background: rgba(0,191,255,0.06);
+            border-left: 4px solid #00bfff;
+            padding: 16px;
+            margin: 16px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .warning {
+            background: rgba(245,158,11,0.06);
+            border-left: 4px solid #f59e0b;
+            padding: 16px;
+            margin: 16px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .warning p { color: #fbbf24; }
+        .step { display: flex; gap: 12px; align-items: flex-start; margin: 10px 0; padding: 10px; background: rgba(255,255,255,0.02); border-radius: 6px; }
+        .step-num { background: #00bfff; color: #0f1419; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85em; flex-shrink: 0; }
+        .toc { background: rgba(0,191,255,0.04); border-radius: 10px; padding: 20px; margin-bottom: 24px; }
+        .toc h3 { color: #00bfff; margin-bottom: 10px; }
+        .toc a { color: #a78bfa; text-decoration: none; }
+        .toc a:hover { text-decoration: underline; }
+        .toc ol { padding-left: 18px; }
+        .toc li { margin-bottom: 4px; }
+        footer { text-align: center; padding: 30px; color: #556677; font-size: 0.85em; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>Tekla Connection Manager</h1>
+        <p>Documentacion tecnica - App React/Vite + Node.js con edge-js</p>
+        <div style="margin-top: 16px;">
+            <span class="badge">React 18</span>
+            <span class="badge">Vite 5</span>
+            <span class="badge">Node.js</span>
+            <span class="badge">Express</span>
+            <span class="badge">edge-js</span>
+            <span class="badge">Tekla 2020</span>
+        </div>
+    </header>
+
+    <nav class="toc">
+        <h3>Contenido</h3>
+        <ol>
+            <li><a href="#arquitectura">Arquitectura</a></li>
+            <li><a href="#estructura">Estructura del Proyecto</a></li>
+            <li><a href="#requisitos">Requisitos</a></li>
+            <li><a href="#instalacion">Instalacion</a></li>
+            <li><a href="#uso">Uso de la App</a></li>
+            <li><a href="#api">Endpoints de la API</a></li>
+            <li><a href="#edge-js">Como funciona edge-js</a></li>
+            <li><a href="#componentes">Catalogo de Componentes</a></li>
+            <li><a href="#troubleshooting">Solucion de Problemas</a></li>
+        </ol>
+    </nav>
+
+    <section id="arquitectura">
+        <h2>1. Arquitectura</h2>
+        <p>La aplicacion usa <strong>edge-js</strong> para cargar los DLLs de Tekla Structures directamente desde Node.js, eliminando la necesidad de un proyecto .NET separado.</p>
+        <div class="diagram">
+            <strong>React + Vite</strong> (puerto 5173)<br>
+            <span class="arrow">&#8595; &#8593; HTTP (axios)</span><br>
+            <strong>Express API</strong> (puerto 3001)<br>
+            <span class="arrow">&#8595; &#8593; edge-js (C# inline)</span><br>
+            <strong>Tekla Open API DLLs</strong><br>
+            <span class="arrow">&#8595; &#8593;</span><br>
+            <strong>Tekla Structures 2020</strong>
+        </div>
+        <div class="highlight">
+            <p><strong>Clave:</strong> edge-js permite ejecutar codigo C# inline dentro de Node.js. Cada modulo en <code>server/tekla/</code> contiene funciones C# que llaman a la API de Tekla. edge-js serializa automaticamente los objetos entre JavaScript y .NET.</p>
+        </div>
+    </section>
+
+    <section id="estructura">
+        <h2>2. Estructura del Proyecto</h2>
+        <div class="file-tree">
+            <span class="folder">tekla-app/</span><br>
+            &nbsp;&nbsp;<span class="file">package.json</span> <span style="color:#556677;">&larr; Root con scripts paralelos</span><br>
+            &nbsp;&nbsp;<span class="folder">server/</span><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="file">package.json</span><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="file">index.js</span> <span style="color:#556677;">&larr; Express + rutas API</span><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="file">.env</span> <span style="color:#556677;">&larr; Ruta a DLLs de Tekla</span><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="folder">tekla/</span><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">status.js</span> <span style="color:#556677;">&larr; Verificar conexion</span><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">model.js</span> <span style="color:#556677;">&larr; Leer vigas/columnas</span><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">connection.js</span> <span style="color:#556677;">&larr; Crear/eliminar conexiones</span><br>
+            &nbsp;&nbsp;<span class="folder">client/</span><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="file">package.json</span><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="file">vite.config.js</span><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="file">index.html</span><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="folder">src/</span><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">main.jsx</span><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">App.jsx</span> <span style="color:#556677;">&larr; Componente principal</span><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="folder">api/tekla.js</span> <span style="color:#556677;">&larr; Servicio Axios</span><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="folder">hooks/useTekla.js</span> <span style="color:#556677;">&larr; Hook con estado</span><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="folder">components/</span><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">StatusBar.jsx</span><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">BeamTable.jsx</span><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">ConnectionForm.jsx</span><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">BatchPanel.jsx</span><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="folder">styles/app.css</span>
+        </div>
+    </section>
+
+    <section id="requisitos">
+        <h2>3. Requisitos</h2>
+        <ul>
+            <li><strong>Tekla Structures 2020</strong> instalado (con los DLLs de la API)</li>
+            <li><strong>Node.js 18+</strong> (LTS recomendado)</li>
+            <li><strong>npm</strong> o <strong>yarn</strong></li>
+            <li><strong>.NET Framework 4.7.2+</strong> (necesario para edge-js, pero NO necesitas crear un proyecto .NET)</li>
+        </ul>
+        <div class="warning">
+            <p><strong>Importante:</strong> edge-js necesita .NET Framework instalado en Windows para poder cargar los DLLs de Tekla. Esto NO significa que necesites crear un proyecto .NET, solo que el runtime debe estar presente (ya viene con Windows).</p>
+        </div>
+    </section>
+
+    <section id="instalacion">
+        <h2>4. Instalacion</h2>
+        <h3>4.1 Instalar dependencias</h3>
+        <pre><code>cd Desktop/prueba/tekla-app
+npm run install:all</code></pre>
+        <p>Este comando instala las dependencias del root, server y client.</p>
+
+        <h3>4.2 Configurar ruta de Tekla</h3>
+        <p>Edita <code>server/.env</code> con la ruta correcta a tu instalacion de Tekla:</p>
+        <pre><code>TEKLA_BIN_PATH=C:\Program Files\Tekla Structures\2020.0\nt\bin</code></pre>
+
+        <h3>4.3 Ejecutar</h3>
+        <div class="step">
+            <div class="step-num">1</div>
+            <div><p>Abrir Tekla Structures 2020 con un modelo que contenga elementos.</p></div>
+        </div>
+        <div class="step">
+            <div class="step-num">2</div>
+            <div>
+                <p>Iniciar la app:</p>
+                <pre><code>npm run dev</code></pre>
+                <p>Esto arranca Express en <code>:3001</code> y Vite en <code>:5173</code>.</p>
+            </div>
+        </div>
+        <div class="step">
+            <div class="step-num">3</div>
+            <div><p>Abrir <code>http://localhost:5173</code> en el navegador.</p></div>
+        </div>
+    </section>
+
+    <section id="uso">
+        <h2>5. Uso de la App</h2>
+        <h3>5.1 Verificar Conexion</h3>
+        <p>Al abrir la app, muestra automaticamente si esta conectado a Tekla. Si no, haz clic en "Reintentar Conexion".</p>
+
+        <h3>5.2 Cargar Elementos</h3>
+        <p>Haz clic en "Cargar Elementos" para obtener todas las vigas y columnas del modelo activo.</p>
+
+        <h3>5.3 Conexion Individual</h3>
+        <ol>
+            <li>Selecciona el elemento primario (columna o viga)</li>
+            <li>Selecciona el elemento secundario</li>
+            <li>Elige el tipo de conexion (Shear Tab, End Plate, etc.)</li>
+            <li>Configura parametros (tornillo, espesor de placa)</li>
+            <li>Haz clic en "Aplicar Conexion"</li>
+        </ol>
+
+        <h3>5.4 Aplicacion en Lote</h3>
+        <ol>
+            <li>Cambia a la pestana "Aplicacion en Lote"</li>
+            <li>Haz clic en "Generar y Aplicar Todas las Conexiones"</li>
+            <p>Crea automaticamente conexiones Shear Tab entre todas las vigas y columnas.</p>
+        </ol>
+    </section>
+
+    <section id="api">
+        <h2>6. Endpoints de la API</h2>
+        <table>
+            <tr><th>Metodo</th><th>Ruta</th><th>Descripcion</th></tr>
+            <tr><td><code>GET</code></td><td><code>/api/status</code></td><td>Verifica conexion con Tekla</td></tr>
+            <tr><td><code>GET</code></td><td><code>/api/beams</code></td><td>Lista todas las vigas</td></tr>
+            <tr><td><code>GET</code></td><td><code>/api/columns</code></td><td>Lista todas las columnas</td></tr>
+            <tr><td><code>GET</code></td><td><code>/api/objects</code></td><td>Lista vigas y columnas</td></tr>
+            <tr><td><code>GET</code></td><td><code>/api/components</code></td><td>Catalogo de componentes</td></tr>
+            <tr><td><code>POST</code></td><td><code>/api/connections</code></td><td>Aplica una conexion</td></tr>
+            <tr><td><code>POST</code></td><td><code>/api/connections/advanced</code></td><td>Conexion con parametros</td></tr>
+            <tr><td><code>POST</code></td><td><code>/api/connections/batch</code></td><td>Aplica multiples conexiones</td></tr>
+            <tr><td><code>DELETE</code></td><td><code>/api/connections/:id</code></td><td>Elimina una conexion</td></tr>
+        </table>
+
+        <h3>Ejemplo de Request</h3>
+        <pre><code>POST /api/connections
+Content-Type: application/json
+
+{
+  "primaryId": 12345,
+  "secondaryId": 67890,
+  "componentNumber": 44,
+  "componentName": "Shear Tab"
+}</code></pre>
+
+        <h3>Ejemplo de Response</h3>
+        <pre><code>{
+  "success": true,
+  "message": "Conexion creada: Shear Tab",
+  "connectionId": 99999
+}</code></pre>
+    </section>
+
+    <section id="edge-js">
+        <h2>7. Como funciona edge-js</h2>
+        <p>edge-js permite ejecutar codigo C#/.NET directamente desde Node.js. Los DLLs de Tekla se cargan como assemblies .NET.</p>
+
+        <h3>Estructura de un modulo</h3>
+        <pre><code>const edge = require('edge-js');
+const path = require('path');
+
+// 1. Cargar assemblies
+edge.assemblies([
+  path.join(TEKLA_BIN, 'Tekla.Structures.Model.dll'),
+]);
+
+// 2. Definir funcion C# inline
+const miFuncion = edge.func({
+  source: function () {/*
+    using System.Threading.Tasks;
+    using Tekla.Structures.Model;
+
+    public class Startup
+    {
+        public async Task&lt;object&gt; Invoke(object input)
+        {
+            // Codigo C# aqui
+            var model = new Model();
+            return new { connected = model.GetConnectionStatus() };
+        }
+    }
+  */}
+});
+
+// 3. Llamar desde JS
+const resultado = await miFuncion({});
+console.log(resultado.connected);</code></pre>
+
+        <div class="highlight">
+            <p><strong>Nota:</strong> El C# va dentro de un comentario <code>/* */</code> que edge-js parsea. La clase debe llamarse <code>Startup</code> con un metodo <code>Invoke</code> que recibe <code>object input</code> y retorna <code>Task&lt;object&gt;</code>.</p>
+        </div>
+    </section>
+
+    <section id="componentes">
+        <h2>8. Catalogo de Componentes</h2>
+        <table>
+            <tr><th>Numero</th><th>Nombre</th><th>Categoria</th></tr>
+            <tr><td><code>1</code></td><td>Clip Angle</td><td>Beam to Column</td></tr>
+            <tr><td><code>10</code></td><td>End Plate</td><td>Beam to Column</td></tr>
+            <tr><td><code>11</code></td><td>Splice Plate</td><td>Beam to Beam</td></tr>
+            <tr><td><code>44</code></td><td>Shear Tab</td><td>Beam to Column</td></tr>
+            <tr><td><code>134</code></td><td>Column Seat</td><td>Beam to Column</td></tr>
+            <tr><td><code>142</code></td><td>Stiffened End Plate</td><td>Beam to Column</td></tr>
+            <tr><td><code>146</code></td><td>Bolted Bracket</td><td>Beam to Column</td></tr>
+        </table>
+    </section>
+
+    <section id="troubleshooting">
+        <h2>9. Solucion de Problemas</h2>
+
+        <div class="warning">
+            <p><strong>"Could not load assembly"</strong><br>
+            Verifica que <code>TEKLA_BIN_PATH</code> en <code>server/.env</code> apunte a la carpeta correcta de Tekla.</p>
+        </div>
+
+        <div class="warning">
+            <p><strong>"No conectado a Tekla"</strong><br>
+            Asegurate de que Tekla Structures este abierto con un modelo cargado antes de iniciar el servidor.</p>
+        </div>
+
+        <div class="warning">
+            <p><strong>"edge-js install error"</strong><br>
+            Ejecuta <code>npm install</code> con permisos de administrador. edge-js compila codigo nativo durante la instalacion.</p>
+        </div>
+
+        <div class="warning">
+            <p><strong>El servidor no inicia en el puerto 3001</strong><br>
+            Cambia <code>PORT</code> en <code>server/.env</code> y actualiza el proxy en <code>client/vite.config.js</code>.</p>
+        </div>
+    </section>
+
+    <footer>
+        <p>Tekla Connection Manager v1.0 - React/Vite + Node.js + edge-js</p>
+    </footer>
+</div>
+</body>
+</html>

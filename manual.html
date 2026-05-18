@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manual - Tekla Connection Manager</title>
+  <style>
+    :root {
+      --primary: #1a73e8;
+      --success: #34a853;
+      --error: #ea4335;
+      --warning: #fbbc04;
+      --bg: #f8f9fa;
+      --card: #ffffff;
+      --text: #202124;
+      --muted: #5f6368;
+      --border: #dadce0;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.6;
+      padding: 2rem;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+    h1 { font-size: 2rem; margin-bottom: 0.5rem; color: var(--primary); }
+    h2 { font-size: 1.5rem; margin: 2rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--primary); }
+    h3 { font-size: 1.15rem; margin: 1.5rem 0 0.5rem; color: var(--text); }
+    p { margin-bottom: 1rem; }
+    .subtitle { color: var(--muted); font-size: 1.1rem; margin-bottom: 2rem; }
+    .badge {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      vertical-align: middle;
+    }
+    .badge-green { background: #e6f4ea; color: #137333; }
+    .badge-blue { background: #e8f0fe; color: #1a73e8; }
+    .badge-orange { background: #fef7e0; color: #b06000; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+    }
+    .card h3 { margin-top: 0; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      font-size: 0.95rem;
+    }
+    th, td {
+      text-align: left;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    th { background: var(--bg); font-weight: 600; }
+    tr:hover { background: #f1f3f4; }
+    code {
+      background: #f1f3f4;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.9em;
+      font-family: 'Cascadia Code', 'Fira Code', Consolas, monospace;
+    }
+    pre {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      padding: 1rem;
+      border-radius: 8px;
+      overflow-x: auto;
+      margin: 1rem 0;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+    pre code { background: none; padding: 0; color: inherit; }
+    .step {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .step-num {
+      flex-shrink: 0;
+      width: 36px;
+      height: 36px;
+      background: var(--primary);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+    }
+    .step-content { flex: 1; }
+    .step-content h3 { margin-top: 0; }
+    ul, ol { margin: 0.5rem 0 1rem 1.5rem; }
+    li { margin-bottom: 0.4rem; }
+    .icon { font-size: 1.2rem; margin-right: 0.25rem; }
+    .toc {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+    }
+    .toc h3 { margin-top: 0; }
+    .toc ol { margin: 0.5rem 0 0 1.25rem; }
+    .toc a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+    .toc a:hover { text-decoration: underline; }
+    .note {
+      background: #e8f0fe;
+      border-left: 4px solid var(--primary);
+      padding: 1rem;
+      border-radius: 0 8px 8px 0;
+      margin: 1rem 0;
+    }
+    .warning {
+      background: #fef7e0;
+      border-left: 4px solid var(--warning);
+      padding: 1rem;
+      border-radius: 0 8px 8px 0;
+      margin: 1rem 0;
+    }
+    .endpoint {
+      font-family: 'Cascadia Code', 'Fira Code', Consolas, monospace;
+      font-size: 0.9rem;
+    }
+    .method {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: 700;
+      font-size: 0.8rem;
+      margin-right: 6px;
+    }
+    .method-get { background: #e6f4ea; color: #137333; }
+    .method-post { background: #e8f0fe; color: #1a73e8; }
+    .method-delete { background: #fce8e6; color: #c5221f; }
+    footer {
+      margin-top: 3rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Tekla Connection Manager</h1>
+<p class="subtitle">Manual de usuario — Automatizacion de conexiones estructurales en Tekla Structures 2020</p>
+
+<div class="toc">
+  <h3>Contenido</h3>
+  <ol>
+    <li><a href="#overview">Descripcion General</a></li>
+    <li><a href="#requirements">Requisitos</a></li>
+    <li><a href="#start">Inicio Rapido</a></li>
+    <li><a href="#interface">Interfaz de Usuario</a></li>
+    <li><a href="#workflow">Flujo de Trabajo</a></li>
+    <li><a href="#connections">Tipos de Conexion</a></li>
+    <li><a href="#batch">Aplicacion en Lote</a></li>
+    <li><a href="#api">Referencia API</a></li>
+    <li><a href="#troubleshooting">Solucion de Problemas</a></li>
+    <li><a href="#architecture">Arquitectura Tecnica</a></li>
+  </ol>
+</div>
+
+<!-- ============================================================ -->
+<h2 id="overview">1. Descripcion General</h2>
+<p>
+  <strong>Tekla Connection Manager</strong> es una aplicacion web que permite aplicar conexiones estructurales
+  (placas de cortante, placas finales, angulos de clip, etc.) a elementos de un modelo de Tekla Structures
+  directamente desde el navegador.
+</p>
+<div class="card">
+  <h3>Funcionalidades Principales</h3>
+  <ul>
+    <li>Verificacion de conexion con Tekla Structures en tiempo real</li>
+    <li>Listado de todos los elementos del modelo (vigas y columnas)</li>
+    <li>Aplicacion de conexiones individuales con parametros personalizados</li>
+    <li>Aplicacion en lote — genera conexiones automaticamente entre vigas y columnas</li>
+    <li>Catalogo de 7 tipos de conexion predefinidos</li>
+    <li>Resultados detallados con estado exitoso/fallido por conexion</li>
+  </ul>
+</div>
+
+<!-- ============================================================ -->
+<h2 id="requirements">2. Requisitos</h2>
+<table>
+  <tr><th>Componente</th><th>Version</th><th>Notas</th></tr>
+  <tr><td>Tekla Structures</td><td>2020.0</td><td>Debe estar abierto con un modelo cargado</td></tr>
+  <tr><td>Python</td><td>3.11+</td><td>Para el backend Flask</td></tr>
+  <tr><td>Node.js</td><td>18+</td><td>Para el frontend Vite</td></tr>
+  <tr><td>pythonnet</td><td>3.0.5</td><td>Puente Python → .NET DLLs de Tekla</td></tr>
+  <tr><td>.NET Framework</td><td>4.x</td><td>Pre-instalado en Windows</td></tr>
+</table>
+<div class="note">
+  <strong>Nota:</strong> Los DLLs de Tekla se encuentran en:<br>
+  <code>C:\Program Files\Tekla Structures\2020.0\nt\bin\plugins\</code>
+</div>
+
+<!-- ============================================================ -->
+<h2 id="start">3. Inicio Rapido</h2>
+
+<div class="step">
+  <div class="step-num">1</div>
+  <div class="step-content">
+    <h3>Abrir Tekla Structures 2020</h3>
+    <p>Abre Tekla Structures y carga el modelo con el que deseas trabajar. El modelo debe contener al menos vigas o columnas.</p>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-num">2</div>
+  <div class="step-content">
+    <h3>Iniciar el Backend (Flask)</h3>
+    <p>Abre una terminal en la carpeta <code>server/</code> y ejecuta:</p>
+    <pre><code>cd C:\Users\gcorrea\Desktop\prueba\tekla-app\server
+python app.py</code></pre>
+    <p>El servidor arrancara en <code>http://localhost:3001</code>.</p>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-num">3</div>
+  <div class="step-content">
+    <h3>Iniciar el Frontend (Vite)</h3>
+    <p>Abre otra terminal en la carpeta <code>client/</code> y ejecuta:</p>
+    <pre><code>cd C:\Users\gcorrea\Desktop\prueba\tekla-app\client
+npm run dev</code></pre>
+    <p>La interfaz estara disponible en <code>http://localhost:5176</code>.</p>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-num">4</div>
+  <div class="step-content">
+    <h3>Abrir en el Navegador</h3>
+    <p>Navega a <code>http://localhost:5176</code>. Veras el estado de conexion en la barra superior.</p>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<h2 id="interface">4. Interfaz de Usuario</h2>
+
+<h3>4.1 Barra de Estado (StatusBar)</h3>
+<div class="card">
+  <p>Parte superior de la pantalla. Muestra:</p>
+  <ul>
+    <li><strong>Titulo:</strong> "Tekla Connection Manager"</li>
+    <li><strong>Estado:</strong> <span class="badge badge-green">Conectado</span> o <span class="badge badge-orange">Desconectado</span></li>
+    <li><strong>Nombre del modelo:</strong> Se muestra cuando hay conexion activa</li>
+    <li><strong>Boton "Actualizar":</strong> Refresca el estado de conexion y recarga los elementos</li>
+  </ul>
+</div>
+
+<h3>4.2 Tabla de Elementos (BeamTable)</h3>
+<div class="card">
+  <p>Muestra todos los elementos estructurales del modelo de Tekla.</p>
+  <table>
+    <tr><th>Columna</th><th>Descripcion</th></tr>
+    <tr><td>ID</td><td>Identificador unico del elemento en Tekla</td></tr>
+    <tr><td>Nombre</td><td>Nombre asignado al elemento</td></tr>
+    <tr><td>Tipo</td><td><span class="badge badge-blue">Viga</span> o <span class="badge badge-green">Columna</span></td></tr>
+    <tr><td>Perfil</td><td>Seccion transversal (ej: IPE300, HEB200)</td></tr>
+    <tr><td>Material</td><td>Material del elemento (ej: S275, S355)</td></tr>
+  </table>
+  <p>Puedes seleccionar elementos haciendo clic en la fila o en el checkbox. Los elementos seleccionados se resaltan.</p>
+</div>
+
+<h3>4.3 Formulario de Conexion (ConnectionForm)</h3>
+<div class="card">
+  <p>Para aplicar una conexion individual. Contiene:</p>
+  <ul>
+    <li><strong>Elemento Primario:</strong> Generalmente la columna (soporte)</li>
+    <li><strong>Elemento Secundario:</strong> Generalmente la viga (miembro conectado)</li>
+    <li><strong>Tipo de Conexion:</strong> Catalogo de 7 componentes disponibles</li>
+    <li><strong>Tamano de Tornillo:</strong> M12, M16, M20 o M24</li>
+    <li><strong>Espesor de Placa:</strong> Entre 6mm y 40mm</li>
+  </ul>
+</div>
+
+<h3>4.4 Panel de Lote (BatchPanel)</h3>
+<div class="card">
+  <p>Para aplicar conexiones de forma masiva. Genera automaticamente conexiones <em>Shear Tab</em> entre todas las vigas y columnas del modelo. Muestra un resumen con total, exitosas y fallidas.</p>
+</div>
+
+<!-- ============================================================ -->
+<h2 id="workflow">5. Flujo de Trabajo</h2>
+
+<h3>5.1 Conexion Individual</h3>
+<ol>
+  <li>Haz clic en <strong>"Cargar Elementos"</strong> para obtener la lista de vigas y columnas</li>
+  <li>Cambia a la pestana <strong>"Conexion Individual"</strong></li>
+  <li>Selecciona el <strong>Elemento Primario</strong> (columna/soporte)</li>
+  <li>Selecciona el <strong>Elemento Secundario</strong> (viga/miembro)</li>
+  <li>Elige el <strong>Tipo de Conexion</strong> del catalogo</li>
+  <li>Ajusta los parametros: <strong>tamano de tornillo</strong> y <strong>espesor de placa</strong></li>
+  <li>Haz clic en <strong>"Aplicar Conexion"</strong></li>
+  <li>El resultado aparecera en la barra de estado</li>
+</ol>
+
+<h3>5.2 Aplicacion en Lote</h3>
+<ol>
+  <li>Haz clic en <strong>"Cargar Elementos"</strong></li>
+  <li>Cambia a la pestana <strong>"Aplicacion en Lote"</strong></li>
+  <li>Revisa el conteo de columnas, vigas y conexiones estimadas</li>
+  <li>Haz clic en <strong>"Generar y Aplicar Todas las Conexiones"</strong></li>
+  <li>Espera a que se procesen todas las conexiones</li>
+  <li>Revisa el resumen de resultados (exitosas vs fallidas)</li>
+</ol>
+
+<div class="warning">
+  <strong>Advertencia:</strong> La aplicacion en lote genera una conexion Shear Tab (#44) por cada combinacion
+  viga-columna. Si tienes 10 vigas y 5 columnas, se crearan 50 conexiones. Verifica que esto es lo que deseas
+  antes de ejecutar.
+</div>
+
+<!-- ============================================================ -->
+<h2 id="connections">6. Tipos de Conexion</h2>
+<table>
+  <tr><th>#</th><th>Nombre</th><th>Categoria</th><th>Uso Tipico</th></tr>
+  <tr><td>1</td><td>Clip Angle</td><td>Beam to Column</td><td>Angulo de clip atornillado</td></tr>
+  <tr><td>10</td><td>End Plate</td><td>Beam to Column</td><td>Placa final soldada</td></tr>
+  <tr><td>11</td><td>Splice Plate</td><td>Beam to Beam</td><td>Empalme entre vigas</td></tr>
+  <tr><td>44</td><td>Shear Tab</td><td>Beam to Column</td><td>Placa de cortante — la mas comun</td></tr>
+  <tr><td>134</td><td>Column Seat</td><td>Beam to Column</td><td>Asiento de columna</td></tr>
+  <tr><td>142</td><td>Stiffened End Plate</td><td>Beam to Column</td><td>Placa final rigidizada</td></tr>
+  <tr><td>146</td><td>Bolted Bracket</td><td>Beam to Column</td><td>Cartela atornillada</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="batch">7. Aplicacion en Lote — Detalle</h2>
+<p>
+  El panel de lote crea automaticamente conexiones <strong>Shear Tab (#44)</strong> entre cada par
+  columna-viga encontrado en el modelo.
+</p>
+<div class="card">
+  <h3>Logica de Generacion</h3>
+  <pre><code>para cada columna en el modelo:
+    para cada viga en el modelo:
+        aplicar conexion(columna.id, viga.id, #44, "Shear Tab")</code></pre>
+  <p>Esto genera <code>N_columnas × N_vigas</code> conexiones.</p>
+</div>
+<div class="card">
+  <h3>Interpretacion de Resultados</h3>
+  <table>
+    <tr><th>Estado</th><th>Significado</th></tr>
+    <tr><td><span class="badge badge-green">OK</span></td><td>Conexion aplicada exitosamente en Tekla</td></tr>
+    <tr><td><span class="badge badge-orange">ERROR</span></td><td>Fallo al aplicar — ver columna "Mensaje" para detalles</td></tr>
+  </table>
+</div>
+
+<!-- ============================================================ -->
+<h2 id="api">8. Referencia API</h2>
+<p>El backend expone los siguientes endpoints REST en <code>http://localhost:3001</code>:</p>
+
+<table>
+  <tr><th>Metodo</th><th>Endpoint</th><th>Descripcion</th></tr>
+  <tr>
+    <td><span class="method method-get">GET</span></td>
+    <td class="endpoint">/api/status</td>
+    <td>Estado de conexion con Tekla</td>
+  </tr>
+  <tr>
+    <td><span class="method method-get">GET</span></td>
+    <td class="endpoint">/api/beams</td>
+    <td>Listar todas las vigas</td>
+  </tr>
+  <tr>
+    <td><span class="method method-get">GET</span></td>
+    <td class="endpoint">/api/columns</td>
+    <td>Listar todas las columnas</td>
+  </tr>
+  <tr>
+    <td><span class="method method-get">GET</span></td>
+    <td class="endpoint">/api/objects</td>
+    <td>Listar todos los elementos (vigas + columnas)</td>
+  </tr>
+  <tr>
+    <td><span class="method method-get">GET</span></td>
+    <td class="endpoint">/api/components</td>
+    <td>Catalogo de tipos de conexion</td>
+  </tr>
+  <tr>
+    <td><span class="method method-post">POST</span></td>
+    <td class="endpoint">/api/connections</td>
+    <td>Aplicar una conexion individual</td>
+  </tr>
+  <tr>
+    <td><span class="method method-post">POST</span></td>
+    <td class="endpoint">/api/connections/advanced</td>
+    <td>Aplicar conexion con parametros avanzados</td>
+  </tr>
+  <tr>
+    <td><span class="method method-post">POST</span></td>
+    <td class="endpoint">/api/connections/batch</td>
+    <td>Aplicar multiples conexiones en lote</td>
+  </tr>
+  <tr>
+    <td><span class="method method-delete">DELETE</span></td>
+    <td class="endpoint">/api/connections/:id</td>
+    <td>Eliminar una conexion por ID</td>
+  </tr>
+</table>
+
+<h3>Ejemplo: Aplicar Conexion</h3>
+<pre><code>POST /api/connections
+Content-Type: application/json
+
+{
+  "primaryId": 12345,
+  "secondaryId": 67890,
+  "componentNumber": 44,
+  "componentName": "Shear Tab",
+  "boltSize": "M16",
+  "plateThickness": 10
+}</code></pre>
+
+<h3>Respuesta Exitosa</h3>
+<pre><code>{
+  "success": true,
+  "message": "Conexion aplicada correctamente"
+}</code></pre>
+
+<!-- ============================================================ -->
+<h2 id="troubleshooting">9. Solucion de Problemas</h2>
+
+<table>
+  <tr><th>Problema</th><th>Causa Probable</th><th>Solucion</th></tr>
+  <tr>
+    <td>"Desconectado" en la barra de estado</td>
+    <td>Tekla Structures no esta abierto o no hay modelo cargado</td>
+    <td>Abre Tekla 2020 y carga un modelo. Haz clic en "Reintentar Conexion"</td>
+  </tr>
+  <tr>
+    <td>"No hay elementos cargados"</td>
+    <td>No se ha hecho clic en "Cargar Elementos"</td>
+    <td>Haz clic en el boton "Cargar Elementos" de la tabla</td>
+  </tr>
+  <tr>
+    <td>Error al aplicar conexion</td>
+    <td>IDs invalidos o elementos incompatibles</td>
+    <td>Verifica que los IDs existen y que los elementos son geometricamente compatibles</td>
+  </tr>
+  <tr>
+    <td>Puerto 3001 en uso</td>
+    <td>Otra instancia del servidor esta corriendo</td>
+    <td>Cierra la instancia anterior o cambia el puerto en <code>.env</code></td>
+  </tr>
+  <tr>
+    <td>Puerto 5176 en uso</td>
+    <td>Otra instancia de Vite esta corriendo</td>
+    <td>Vite buscara automaticamente el siguiente puerto disponible</td>
+  </tr>
+  <tr>
+    <td>pythonnet no encuentra los DLLs</td>
+    <td>Ruta incorrecta a los plugins de Tekla</td>
+    <td>Verifica que Tekla 2020 esta en <code>C:\Program Files\Tekla Structures\2020.0\</code></td>
+  </tr>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="architecture">10. Arquitectura Tecnica</h2>
+
+<div class="card">
+  <h3>Stack</h3>
+  <table>
+    <tr><th>Capa</th><th>Tecnologia</th><th>Puerto</th></tr>
+    <tr><td>Frontend</td><td>React 18 + Vite</td><td>5176</td></tr>
+    <tr><td>Backend</td><td>Python 3.11 + Flask</td><td>3001</td></tr>
+    <tr><td>Bridge .NET</td><td>pythonnet 3.0.5</td><td>—</td></tr>
+    <tr><td>CAD</td><td>Tekla Structures 2020 Open API</td><td>—</td></tr>
+  </table>
+</div>
+
+<div class="card">
+  <h3>Diagrama de Flujo</h3>
+  <pre><code>[Navegador]  →  [Vite :5176]  →  proxy /api  →  [Flask :3001]  →  [pythonnet]  →  [Tekla DLLs]  →  [Tekla Structures]</code></pre>
+</div>
+
+<div class="card">
+  <h3>Estructura del Proyecto</h3>
+  <pre><code>tekla-app/
+├── client/                    # Frontend React
+│   ├── src/
+│   │   ├── api/tekla.js       # Capa de comunicacion con la API
+│   │   ├── components/
+│   │   │   ├── StatusBar.jsx   # Barra de estado de conexion
+│   │   │   ├── BeamTable.jsx   # Tabla de elementos del modelo
+│   │   │   ├── ConnectionForm.jsx  # Formulario de conexion individual
+│   │   │   └── BatchPanel.jsx  # Panel de aplicacion en lote
+│   │   ├── hooks/useTekla.js   # Hook central de estado y logica
+│   │   ├── App.jsx             # Componente raiz
+│   │   └── main.jsx            # Entry point
+│   └── vite.config.js          # Config de Vite con proxy a Flask
+│
+├── server/                    # Backend Python
+│   ├── app.py                 # Servidor Flask con todas las rutas
+│   ├── tekla_bridge.py        # Puente pythonnet a DLLs de Tekla
+│   └── tekla/
+│       ├── status.js          # (Node.js alternativo) verificar conexion
+│       ├── model.js           # (Node.js alternativo) listar elementos
+│       └── connection.js      # (Node.js alternativo) aplicar conexiones
+│
+└── documentacion.html         # Este manual</code></pre>
+</div>
+
+<footer>
+  <p><strong>Tekla Connection Manager</strong> — Manual v1.0 — Mayo 2026</p>
+  <p>Stack: React + Vite + Flask + pythonnet + Tekla Open API 2020</p>
+</footer>
+
+</body>
+</html>

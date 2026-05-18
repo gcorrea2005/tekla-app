@@ -91,9 +91,7 @@ const getAllBeams = edge.func({
         {
             try
             {
-                string mark = "";
-                if (beam.GetUserProperty("PARTMARK", ref mark)) return mark;
-                if (beam.GetReportProperty("PARTMARK", ref mark)) return mark;
+                return beam.GetPartMark() ?? "";
             }
             catch { }
             return "";
@@ -298,9 +296,7 @@ const getAllObjects = edge.func({
         {
             try
             {
-                string mark = "";
-                if (beam.GetUserProperty("PARTMARK", ref mark)) return mark;
-                if (beam.GetReportProperty("PARTMARK", ref mark)) return mark;
+                return beam.GetPartMark() ?? "";
             }
             catch { }
             return "";

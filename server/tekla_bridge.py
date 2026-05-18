@@ -94,6 +94,26 @@ def _get_beam_type(beam):
 
 _grid_levels = None  # Cached grid levels: list of (z_coord, label)
 
+# Reference level: N01 = NE + 0.10 m
+# NE (Nivel de Entrada) = Z_N01 - 100 mm
+_NE_REFERENCE = None  # Cached NE Z coordinate in mm
+
+
+def _get_ne_reference():
+    """Get NE (Nivel de Entrada) Z coordinate in mm.
+    N01 = NE + 0.10 m, so NE = Z_N01 - 100 mm
+    """
+    global _NE_REFERENCE
+    if _NE_REFERENCE is not None:
+        return _NE_REFERENCE
+    levels = _load_grid_levels()
+    for coord, label in levels:
+        if label == "N01":
+            _NE_REFERENCE = coord - 100.0  # NE = Z_N01 - 0.10m
+            return _NE_REFERENCE
+    _NE_REFERENCE = 0.0
+    return _NE_REFERENCE
+
 
 def _load_grid_levels():
     """Load grid level names and Z coordinates from Tekla model."""
@@ -132,7 +152,17 @@ def _get_level(z):
             best_label = label
         else:
             break
-    return best_label
+    return "N25" if best_label == "CUB" else best_label
+
+
+def _get_elevation_cota(z):
+    """Get elevation string relative to NE (Nivel de Entrada).
+    E.g., 'NE+0.10', 'NE+4.00', 'NE-1.50'
+    """
+    ne = _get_ne_reference()
+    diff_m = (z - ne) / 1000.0  # convert mm to m
+    sign = "+" if diff_m >= 0 else "-"
+    return f"NE{sign}{abs(diff_m):.2f}"
 
 
 def _extract_object(obj, type_name=None):
@@ -146,12 +176,14 @@ def _extract_object(obj, type_name=None):
         pass
     start_z = obj.StartPoint.Z
     level = _get_level(start_z)
+    cota = _get_elevation_cota(start_z)
     return {
         "id": obj.Identifier.ID,
         "name": obj.Name or "",
         "type": type_name,
         "partMark": part_mark,
         "level": level,
+        "cota": cota,
         "profile": obj.Profile.ProfileString or "",
         "material": obj.Material.MaterialString or "",
         "startX": obj.StartPoint.X,

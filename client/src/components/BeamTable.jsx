@@ -14,9 +14,6 @@ function levelOrder(level) {
 
 export function BeamTable({ objects, loading, onLoad, selected, onSelect }) {
   const sorted = [...objects].sort((a, b) => {
-    const typeA = a.type === 'BEAM' ? 0 : 1;
-    const typeB = b.type === 'BEAM' ? 0 : 1;
-    if (typeA !== typeB) return typeA - typeB;
     const la = levelOrder(a.level);
     const lb = levelOrder(b.level);
     if (la !== lb) return la.localeCompare(lb);
@@ -40,10 +37,9 @@ export function BeamTable({ objects, loading, onLoad, selected, onSelect }) {
             <thead>
               <tr>
                 <th></th>
-                <th>Parte</th>
-                <th>Nombre</th>
-                <th>Tipo</th>
                 <th>Nivel</th>
+                <th>Cota</th>
+                <th>Parte</th>
                 <th>Perfil</th>
                 <th>Material</th>
               </tr>
@@ -62,14 +58,9 @@ export function BeamTable({ objects, loading, onLoad, selected, onSelect }) {
                       onChange={() => onSelect(obj.id)}
                     />
                   </td>
-                  <td>{obj.partMark}</td>
-                  <td>{obj.name}</td>
-                  <td>
-                    <span className={`type-tag ${obj.type?.toLowerCase()}`}>
-                      {obj.type === 'BEAM' ? 'Viga' : 'Columna'}
-                    </span>
-                  </td>
                   <td>{obj.level}</td>
+                  <td>{obj.cota}</td>
+                  <td>{obj.partMark}</td>
                   <td>{obj.profile}</td>
                   <td>{obj.material}</td>
                 </tr>

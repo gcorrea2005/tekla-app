@@ -41,6 +41,15 @@ def check_connection():
         return {"connected": False, "name": "", "error": str(e)}
 
 
+def _is_concrete(obj):
+    """Check if an object is made of concrete."""
+    try:
+        mat = (obj.Material.MaterialString or "").upper()
+        return mat.startswith("C") or "CONCRETE" in mat
+    except Exception:
+        return False
+
+
 def _get_beam_type(beam):
     """Determine if a beam is a column or beam by class number.
     In Tekla default environments: class 1 = beam, class 2 = column.
@@ -66,19 +75,71 @@ def _get_beam_type(beam):
     return "BEAM"
 
 
+_grid_levels = None  # Cached grid levels: list of (z_coord, label)
+
+
+def _load_grid_levels():
+    """Load grid level names and Z coordinates from Tekla model."""
+    global _grid_levels
+    if _grid_levels is not None:
+        return _grid_levels
+    try:
+        model = Model()
+        selector = model.GetModelObjectSelector()
+        enumerator = selector.GetAllObjects()
+        while enumerator.MoveNext():
+            obj = enumerator.Current
+            if obj is not None and type(obj).__name__ == 'Grid':
+                coords_str = str(obj.CoordinateZ)
+                labels_str = str(obj.LabelZ)
+                coords = [float(c.strip()) for c in coords_str.split() if c.strip()]
+                labels = [l.strip() for l in labels_str.split() if l.strip()]
+                if len(coords) == len(labels):
+                    _grid_levels = sorted(zip(coords, labels), key=lambda x: x[0])
+                    return _grid_levels
+    except Exception:
+        pass
+    _grid_levels = []
+    return _grid_levels
+
+
+def _get_level(z):
+    """Get level name from Z coordinate using grid levels."""
+    levels = _load_grid_levels()
+    if not levels:
+        return ""
+    # Find the closest level (nearest below or equal to z)
+    best_label = levels[0][1]
+    for coord, label in levels:
+        if z >= coord - 500:  # 500mm tolerance
+            best_label = label
+        else:
+            break
+    return best_label
+
+
 def _extract_object(obj, type_name=None):
     """Extract common properties from a model object."""
     if type_name is None:
         type_name = _get_beam_type(obj)
+    part_mark = ""
+    try:
+        part_mark = obj.GetPartMark() or ""
+    except Exception:
+        pass
+    start_z = obj.StartPoint.Z
+    level = _get_level(start_z)
     return {
         "id": obj.Identifier.ID,
         "name": obj.Name or "",
         "type": type_name,
+        "partMark": part_mark,
+        "level": level,
         "profile": obj.Profile.ProfileString or "",
         "material": obj.Material.MaterialString or "",
         "startX": obj.StartPoint.X,
         "startY": obj.StartPoint.Y,
-        "startZ": obj.StartPoint.Z,
+        "startZ": start_z,
         "endX": obj.EndPoint.X,
         "endY": obj.EndPoint.Y,
         "endZ": obj.EndPoint.Z,
@@ -107,7 +168,7 @@ def get_all_beams():
     results = []
     try:
         for obj in _get_all_model_objects():
-            if _get_beam_type(obj) == "BEAM":
+            if not _is_concrete(obj) and _get_beam_type(obj) == "BEAM":
                 results.append(_extract_object(obj, "BEAM"))
     except Exception as e:
         results.append({"error": str(e)})
@@ -119,7 +180,7 @@ def get_all_columns():
     results = []
     try:
         for obj in _get_all_model_objects():
-            if _get_beam_type(obj) == "COLUMN":
+            if not _is_concrete(obj) and _get_beam_type(obj) == "COLUMN":
                 results.append(_extract_object(obj, "COLUMN"))
     except Exception as e:
         results.append({"error": str(e)})
@@ -131,7 +192,8 @@ def get_all_objects():
     results = []
     try:
         for obj in _get_all_model_objects():
-            results.append(_extract_object(obj))
+            if not _is_concrete(obj):
+                results.append(_extract_object(obj))
     except Exception as e:
         results.append({"error": str(e)})
     return results

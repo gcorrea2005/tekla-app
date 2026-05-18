@@ -1,6 +1,28 @@
 import React from 'react';
 
+function parsePartNum(partMark) {
+  if (!partMark) return Infinity;
+  const num = parseInt(partMark.split('/')[1], 10);
+  return isNaN(num) ? Infinity : num;
+}
+
+// Extract sort order from level name: B2 < B1 < N01 < N02 < ... < CUB
+function levelOrder(level) {
+  if (!level) return 'ZZZ';
+  return level;
+}
+
 export function BeamTable({ objects, loading, onLoad, selected, onSelect }) {
+  const sorted = [...objects].sort((a, b) => {
+    const typeA = a.type === 'BEAM' ? 0 : 1;
+    const typeB = b.type === 'BEAM' ? 0 : 1;
+    if (typeA !== typeB) return typeA - typeB;
+    const la = levelOrder(a.level);
+    const lb = levelOrder(b.level);
+    if (la !== lb) return la.localeCompare(lb);
+    return parsePartNum(a.partMark) - parsePartNum(b.partMark);
+  });
+
   return (
     <section className="panel">
       <div className="panel-header">
@@ -10,7 +32,7 @@ export function BeamTable({ objects, loading, onLoad, selected, onSelect }) {
         </button>
       </div>
 
-      {objects.length === 0 ? (
+      {sorted.length === 0 ? (
         <p className="empty">No hay elementos cargados. Haz clic en "Cargar Elementos".</p>
       ) : (
         <div className="table-wrap">
@@ -18,15 +40,16 @@ export function BeamTable({ objects, loading, onLoad, selected, onSelect }) {
             <thead>
               <tr>
                 <th></th>
-                <th>ID</th>
+                <th>Parte</th>
                 <th>Nombre</th>
                 <th>Tipo</th>
+                <th>Nivel</th>
                 <th>Perfil</th>
                 <th>Material</th>
               </tr>
             </thead>
             <tbody>
-              {objects.map((obj) => (
+              {sorted.map((obj) => (
                 <tr
                   key={obj.id}
                   className={selected.includes(obj.id) ? 'selected' : ''}
@@ -39,13 +62,14 @@ export function BeamTable({ objects, loading, onLoad, selected, onSelect }) {
                       onChange={() => onSelect(obj.id)}
                     />
                   </td>
-                  <td>{obj.id}</td>
+                  <td>{obj.partMark}</td>
                   <td>{obj.name}</td>
                   <td>
                     <span className={`type-tag ${obj.type?.toLowerCase()}`}>
                       {obj.type === 'BEAM' ? 'Viga' : 'Columna'}
                     </span>
                   </td>
+                  <td>{obj.level}</td>
                   <td>{obj.profile}</td>
                   <td>{obj.material}</td>
                 </tr>

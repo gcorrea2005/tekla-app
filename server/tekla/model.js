@@ -460,8 +460,8 @@ const getSelectedBeams = edge.func({
                 if (!model.GetConnectionStatus())
                     return result;
 
-                var enumerator = model.GetModelObjectSelector()
-                    .GetAllObjectsWithType(ModelObject.ModelObjectEnum.BEAM);
+                var sel = new Tekla.Structures.Model.UI.ModelObjectSelector();
+                var enumerator = sel.GetSelectedObjects();
 
                 while (enumerator.MoveNext())
                 {

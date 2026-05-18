@@ -3,7 +3,7 @@ const express = require('express');
 const cors = require('cors');
 
 const { checkConnection } = require('./tekla/status');
-const { getAllBeams, getAllColumns, getAllObjects } = require('./tekla/model');
+const { getAllBeams, getAllColumns, getAllObjects, getSelectedBeams } = require('./tekla/model');
 const { applyConnection, applyConnectionWithParams, deleteConnection } = require('./tekla/connection');
 
 const app = express();
@@ -31,6 +31,15 @@ app.get('/api/status', async (req, res) => {
 app.get('/api/beams', async (req, res) => {
   try {
     const beams = await getAllBeams({});
+    res.json(beams);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/beams/selected', async (req, res) => {
+  try {
+    const beams = await getSelectedBeams({});
     res.json(beams);
   } catch (err) {
     res.status(500).json({ error: err.message });

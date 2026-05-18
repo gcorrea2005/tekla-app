@@ -25,12 +25,12 @@ export function BeamTable({ objects, loading, onLoad, selected, onSelect }) {
       <div className="panel-header">
         <h2>Elementos del Modelo</h2>
         <button onClick={onLoad} disabled={loading}>
-          {loading ? 'Cargando...' : 'Cargar Elementos'}
+          {loading ? 'Cargando...' : 'Cargar Seleccionados'}
         </button>
       </div>
 
       {sorted.length === 0 ? (
-        <p className="empty">No hay elementos cargados. Haz clic en "Cargar Elementos".</p>
+        <p className="empty">Selecciona elementos en Tekla y haz clic en "Cargar Seleccionados".</p>
       ) : (
         <div className="table-wrap">
           <table>

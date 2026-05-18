@@ -11,6 +11,7 @@ export const teklaApi = {
 
   // Model
   getBeams: () => api.get('/beams'),
+  getSelectedBeams: () => api.get('/beams/selected'),
   getColumns: () => api.get('/columns'),
   getObjects: () => api.get('/objects'),
 

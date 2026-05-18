@@ -27,7 +27,7 @@ export function useTekla() {
     setLoading(true);
     setError(null);
     try {
-      const { data } = await teklaApi.getObjects();
+      const { data } = await teklaApi.getSelectedBeams();
       setObjects(data);
       return data;
     } catch (err) {

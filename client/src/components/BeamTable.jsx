@@ -54,7 +54,14 @@ export function BeamTable({ objects, loading, onLoad, selected, onSelect }) {
       {sorted.length === 0 ? (
         <p className="empty">Selecciona elementos en Tekla y haz clic en "Cargar Seleccionados".</p>
       ) : (
-        <div className="table-wrap">
+        <>
+          <div className="table-stats">
+            <span>Total: {sorted.length}</span>
+            {selected.length > 0 && (
+              <span className="selected-count">Seleccionados: {selected.length}</span>
+            )}
+          </div>
+          <div className="table-wrap">
           <table>
             <thead>
               <tr>
@@ -88,11 +95,9 @@ export function BeamTable({ objects, loading, onLoad, selected, onSelect }) {
             </tbody>
           </table>
         </div>
+        </>
       )}
 
-      {selected.length > 0 && (
-        <p className="selection-count">{selected.length} elemento(s) seleccionado(s)</p>
-      )}
     </section>
   );
 }

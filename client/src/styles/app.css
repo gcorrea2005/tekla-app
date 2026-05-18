@@ -177,6 +177,19 @@ button:disabled {
   color: #556677;
 }
 
+.table-stats {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 8px;
+  font-size: 0.85em;
+  color: #8899aa;
+}
+
+.table-stats .selected-count {
+  color: #00bfff;
+  font-weight: 600;
+}
+
 .empty {
   color: #556677;
   text-align: center;

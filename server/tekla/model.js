@@ -37,6 +37,15 @@ const getAllBeams = edge.func({
                     var beam = enumerator.Current as Beam;
                     if (beam == null) continue;
 
+                    var name = (beam.Name ?? "").ToUpper();
+                    var material = (beam.Material.MaterialString ?? "").ToUpper();
+                    var profile = (beam.Profile.ProfileString ?? "").ToUpper();
+
+                    if (name == "COLUMN" || name == "PLATE") continue;
+                    if (material.StartsWith("C") && material.Length > 1 && char.IsDigit(material[1])) continue;
+                    if (material.Contains("HORMIGON") || material.Contains("CONCRETE")) continue;
+                    if (profile.StartsWith("PL")) continue;
+
                     result.Add(new Dictionary<string, object>
                     {
                         { "id", beam.Identifier.ID },
@@ -150,13 +159,20 @@ const getAllObjects = edge.func({
                     var obj = enumerator.Current as Beam;
                     if (obj == null) continue;
 
-                    var objType = obj.Name == "COLUMN" ? "COLUMN" : "BEAM";
+                    var name = (obj.Name ?? "").ToUpper();
+                    var material = (obj.Material.MaterialString ?? "").ToUpper();
+                    var profile = (obj.Profile.ProfileString ?? "").ToUpper();
+
+                    if (name == "COLUMN" || name == "PLATE") continue;
+                    if (material.StartsWith("C") && material.Length > 1 && char.IsDigit(material[1])) continue;
+                    if (material.Contains("HORMIGON") || material.Contains("CONCRETE")) continue;
+                    if (profile.StartsWith("PL")) continue;
 
                     result.Add(new Dictionary<string, object>
                     {
                         { "id", obj.Identifier.ID },
                         { "name", obj.Name },
-                        { "type", objType },
+                        { "type", "BEAM" },
                         { "profile", obj.Profile.ProfileString ?? "" },
                         { "material", obj.Material.MaterialString ?? "" },
                         { "startX", obj.StartPoint.X },

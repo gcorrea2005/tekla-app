@@ -35,4 +35,11 @@ const checkConnection = edge.func({
   `
 });
 
-module.exports = { checkConnection };
+const checkConnectionAsync = (input) => new Promise((resolve, reject) => {
+  checkConnection(input, (err, result) => {
+    if (err) reject(err);
+    else resolve(result);
+  });
+});
+
+module.exports = { checkConnection: checkConnectionAsync };

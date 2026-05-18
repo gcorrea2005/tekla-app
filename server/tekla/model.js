@@ -182,4 +182,15 @@ const getAllObjects = edge.func({
   `
 });
 
-module.exports = { getAllBeams, getAllColumns, getAllObjects };
+const promisify = (fn) => (input) => new Promise((resolve, reject) => {
+  fn(input, (err, result) => {
+    if (err) reject(err);
+    else resolve(result);
+  });
+});
+
+module.exports = {
+  getAllBeams: promisify(getAllBeams),
+  getAllColumns: promisify(getAllColumns),
+  getAllObjects: promisify(getAllObjects),
+};

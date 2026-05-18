@@ -172,4 +172,15 @@ const deleteConnection = edge.func({
   `
 });
 
-module.exports = { applyConnection, applyConnectionWithParams, deleteConnection };
+const promisify = (fn) => (input) => new Promise((resolve, reject) => {
+  fn(input, (err, result) => {
+    if (err) reject(err);
+    else resolve(result);
+  });
+});
+
+module.exports = {
+  applyConnection: promisify(applyConnection),
+  applyConnectionWithParams: promisify(applyConnectionWithParams),
+  deleteConnection: promisify(deleteConnection),
+};

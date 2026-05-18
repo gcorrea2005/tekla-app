@@ -59,6 +59,14 @@ def _is_plate(obj):
         return False
 
 
+def _is_column_by_name(obj):
+    """Check if object name is COLUMN."""
+    try:
+        return (obj.Name or "").upper() == "COLUMN"
+    except Exception:
+        return False
+
+
 def _get_beam_type(beam):
     """Determine if a beam is a column or beam by class number.
     In Tekla default environments: class 1 = beam, class 2 = column.
@@ -201,7 +209,7 @@ def get_all_objects():
     results = []
     try:
         for obj in _get_all_model_objects():
-            if not _is_concrete(obj) and not _is_plate(obj):
+            if not _is_concrete(obj) and not _is_plate(obj) and not _is_column_by_name(obj):
                 obj_type = _get_beam_type(obj)
                 if obj_type == "BEAM":
                     results.append(_extract_object(obj, "BEAM"))

@@ -7,8 +7,8 @@
 ![Tekla Structures](https://img.shields.io/badge/Tekla_Structures-2020-00598C?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0id2hpdGUiPjxwYXRoIGQ9Ik0xMiAyTDIgN3YxMGwxMCA1IDEwLTVIN0w3IDE3bDUtMi41TDcgMTJsNS0yLjVINnoiLz48L3N2Zz4=)
 ![React](https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react&logoColor=black)
 ![Vite](https://img.shields.io/badge/Vite-5-646CFF?style=for-the-badge&logo=vite&logoColor=white)
-![Python](https://img.shields.io/badge/Python-3.11-3776AB?style=for-the-badge&logo=python&logoColor=white)
-![Flask](https://img.shields.io/badge/Flask-3-000000?style=for-the-badge&logo=flask&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-24-339933?style=for-the-badge&logo=node.js&logoColor=white)
+![edge-js](https://img.shields.io/badge/edge--js-.NET-512BD4?style=for-the-badge&logo=.net&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
 
 <br/>
@@ -29,10 +29,10 @@ Elimina la necesidad de navegar manualmente por los menus de Tekla para cada con
 
 ```
 ┌─────────────┐      ┌──────────┐      ┌──────────┐      ┌─────────────────┐
-│  Navegador  │ ───▶ │ Vite     │ ───▶ │ Flask    │ ───▶ │ Tekla Structures│
-│  React 18   │      │ :5176    │      │ :3001    │      │ 2020 Open API   │
+│  Navegador  │ ───▶ │ Vite     │ ───▶ │ Express  │ ───▶ │ Tekla Structures│
+│  React 18   │      │ :5173    │      │ :3001    │      │ 2020 Open API   │
 └─────────────┘      └──────────┘      └──────────┘      └─────────────────┘
-                              proxy /api      pythonnet
+                              proxy /api      edge-js
 ```
 
 </div>
@@ -44,7 +44,8 @@ Elimina la necesidad de navegar manualmente por los menus de Tekla para cada con
 | Funcionalidad | Descripcion |
 |:---|:---|
 | **Estado en tiempo real** | Verifica la conexion con Tekla Structures y muestra el nombre del modelo activo |
-| **Listado de elementos** | Carga y muestra todas las vigas y columnas del modelo con perfil, material y coordenadas |
+| **Listado de elementos** | Carga vigas del modelo filtradas (sin columnas, placas ni concreto) con nivel, cota, perfil y marca de parte |
+| **Carga por seleccion** | Carga solo los elementos seleccionados en Tekla Structures (usa UI.ModelObjectSelector) |
 | **Seleccion interactiva** | Selecciona elementos haciendo clic en la tabla para usarlos en conexiones |
 | **Conexion individual** | Aplica una conexion entre dos elementos con parametros personalizados (tornillo, placa) |
 | **Aplicacion en lote** | Genera automaticamente conexiones Shear Tab entre todas las combinaciones viga-columna |
@@ -58,10 +59,9 @@ Elimina la necesidad de navegar manualmente por los menus de Tekla para cada con
 | Componente | Version | Notas |
 |:---|:---:|:---|
 | **Tekla Structures** | 2020.0 | Debe estar abierto con un modelo cargado |
-| **Python** | 3.11+ | Backend Flask + pythonnet |
-| **Node.js** | 18+ | Frontend Vite |
-| **.NET Framework** | 4.x | Pre-instalado en Windows |
-| **pythonnet** | 3.0.5 | Puente Python → DLLs de Tekla |
+| **Node.js** | 18+ | Backend Express + Frontend Vite |
+| **.NET Framework** | 4.x | Pre-instalado en Windows (requerido por edge-js) |
+| **edge-js** | latest | Puente Node.js → DLLs de Tekla (.NET) |
 
 > **Nota:** Los DLLs de Tekla se encuentran en `C:\Program Files\Tekla Structures\2020.0\nt\bin\plugins\`
 
@@ -76,18 +76,11 @@ git clone https://github.com/gcorrea2005/tekla-app.git
 cd tekla-app
 ```
 
-### 2. Instalar dependencias del backend
+### 2. Instalar dependencias
 
 ```bash
-cd server
-pip install flask flask-cors pythonnet
-```
-
-### 3. Instalar dependencias del frontend
-
-```bash
-cd ../client
-npm install
+cd server && npm install
+cd ../client && npm install
 ```
 
 ---
@@ -96,27 +89,21 @@ npm install
 
 ### Iniciar la aplicacion
 
-**Terminal 1 — Backend (Flask):**
 ```bash
-cd server
-python app.py
-```
-El servidor arranca en `http://localhost:3001`
-
-**Terminal 2 — Frontend (Vite):**
-```bash
-cd client
 npm run dev
 ```
-La interfaz estara disponible en `http://localhost:5176`
+
+Esto levanta ambos servicios simultaneamente:
+- **Server (Express + edge-js):** `http://localhost:3001`
+- **Client (Vite):** `http://localhost:5173`
 
 ### Flujo de trabajo
 
 ```
 1. Abre Tekla Structures 2020 con tu modelo
-2. Inicia el backend y el frontend
-3. Abre http://localhost:5176 en tu navegador
-4. Haz clic en "Cargar Elementos" para listar vigas y columnas
+2. Ejecuta `npm run dev` desde la raiz del proyecto
+3. Abre http://localhost:5173 en tu navegador
+4. Selecciona elementos en Tekla y haz clic en "Cargar Seleccionados"
 5. Selecciona "Conexion Individual" o "Aplicacion en Lote"
 6. Configura los parametros y aplica
 ```
@@ -131,7 +118,7 @@ La interfaz estara disponible en `http://localhost:5176`
 
 ### Aplicacion en lote
 
-1. Carga los elementos del modelo
+1. Selecciona los elementos en Tekla y cargalos con "Cargar Seleccionados"
 2. Cambia a la pestana **"Aplicacion en Lote"**
 3. Revisa el conteo de columnas, vigas y conexiones estimadas
 4. Haz clic en **"Generar y Aplicar Todas las Conexiones"**
@@ -175,10 +162,11 @@ Respuesta:
 ### Modelo
 
 ```
-GET /api/beams          → Lista de vigas
-GET /api/columns        → Lista de columnas
-GET /api/objects        → Todos los elementos (vigas + columnas)
-GET /api/components     → Catalogo de tipos de conexion
+GET /api/beams           → Lista de vigas (filtradas)
+GET /api/beams/selected  → Vigas seleccionadas en Tekla
+GET /api/columns         → Lista de columnas
+GET /api/objects         → Todos los elementos
+GET /api/components      → Catalogo de tipos de conexion
 ```
 
 ### Conexiones
@@ -224,15 +212,15 @@ Respuesta exitosa:
 ┌─────────────────────────────────────────────────────────────────┐
 │                        NAVEGADOR                                │
 │   React 18 · Vite 5 · Axios                                    │
-│   Puerto 5176                                                   │
+│   Puerto 5173                                                   │
 └────────────────────────┬────────────────────────────────────────┘
                          │ proxy /api
 ┌────────────────────────▼────────────────────────────────────────┐
-│                     SERVIDOR FLASK                               │
-│   Python 3.11 · Flask 3.1 · flask-cors                          │
+│                    SERVIDOR EXPRESS                              │
+│   Node.js · Express · edge-js                                   │
 │   Puerto 3001                                                   │
 └────────────────────────┬────────────────────────────────────────┘
-                         │ pythonnet
+                         │ edge-js
 ┌────────────────────────▼────────────────────────────────────────┐
 │                   TEKLA OPEN API 2020                            │
 │   .NET DLLs → Tekla.Structures.Model                            │
@@ -261,21 +249,19 @@ tekla-app/
 │   │   ├── App.jsx                 # Componente raiz
 │   │   └── main.jsx                # Entry point
 │   ├── index.html                  # HTML base
-│   ├── vite.config.js              # Config de Vite con proxy a Flask
+│   ├── vite.config.js              # Config de Vite con proxy a Express
 │   └── package.json
 │
-├── server/                         # Backend Python
-│   ├── app.py                      # Servidor Flask con todas las rutas
-│   ├── tekla_bridge.py             # Puente pythonnet a DLLs de Tekla
-│   ├── index.js                    # (Alternativo) Servidor Express/Node.js
-│   ├── tekla/                      # (Alternativo) Modulos Node.js
-│   │   ├── status.js
-│   │   ├── model.js
-│   │   └── connection.js
+├── server/                         # Backend Node.js + edge-js
+│   ├── index.js                    # Servidor Express con todas las rutas
+│   ├── tekla/                      # Modulos de integracion con Tekla
+│   │   ├── status.js               # Conexion y estado del modelo
+│   │   ├── model.js                # Consulta de elementos (vigas, columnas)
+│   │   └── connection.js           # Aplicacion de conexiones
+│   ├── app.py                      # (Legacy) Servidor Flask no utilizado
 │   └── package.json
 │
-├── manual.html                     # Manual de usuario en HTML
-├── documentacion.html              # Documentacion adicional
+├── package.json                    # Root: `npm run dev` levanta todo
 ├── .gitignore
 └── README.md                       # Este archivo
 ```
@@ -284,11 +270,11 @@ tekla-app/
 
 | Decision | Razon |
 |:---|:---|
-| **Python + pythonnet** en vez de .NET | Funciona sin .NET SDK — solo necesita .NET Framework runtime (pre-instalado en Windows) |
-| **Flask** como backend | Ligero, sin configuracion compleja, ideal para API REST local |
+| **Node.js + edge-js** en vez de Python | Mejor rendimiento, sin pythonnet, integracion directa con DLLs .NET |
+| **Express** como backend | Ligero, sin configuracion compleja, ideal para API REST local |
 | **Vite** como bundler | HMR instantaneo, proxy integrado para desarrollo |
-| **Un solo enum BEAM** | Tekla 2020 no tiene `ModelObjectEnum.COLUMN` — se clasifica por clase u orientacion |
-| **Clasificacion por clase** | Clase "1" = viga, clase "2" = columna (estandar Tekla). Fallback: orientacion vertical |
+| **UI.ModelObjectSelector** para seleccion | `model.GetModelObjectSelector()` no tiene `GetSelectedObjects()` en Tekla 2020 |
+| **Filtrado en C#** | Se filtra en el edge-js para no enviar datos innecesarios al cliente |
 
 ---
 
@@ -297,10 +283,10 @@ tekla-app/
 | Problema | Causa | Solucion |
 |:---|:---|:---|
 | "Desconectado" en la barra de estado | Tekla no esta abierto o sin modelo | Abre Tekla 2020 y carga un modelo |
-| "No hay elementos cargados" | No se hizo clic en "Cargar Elementos" | Haz clic en el boton de la tabla |
+| "No hay elementos cargados" | No se hizo clic en "Cargar Seleccionados" | Selecciona elementos en Tekla y haz clic en el boton |
 | Error al aplicar conexion | IDs invalidos o elementos incompatibles | Verifica que los IDs existen y son geometricamente compatibles |
-| Puerto 3001 en uso | Otra instancia del servidor corriendo | Cierra la instancia anterior o cambia el puerto en `.env` |
-| pythonnet no encuentra DLLs | Ruta incorrecta a Tekla | Verifica la instalacion en `C:\Program Files\Tekla Structures\2020.0\` |
+| Puerto 3001 en uso | Otra instancia del servidor corriendo | `npx kill-port 3001 5173` y reinicia |
+| edge-js no encuentra DLLs | Ruta incorrecta a Tekla | Verifica la instalacion en `C:\Program Files\Tekla Structures\2020.0\` |
 
 ---
 

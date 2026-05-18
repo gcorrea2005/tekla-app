@@ -2,16 +2,17 @@ const edge = require('edge-js');
 const path = require('path');
 
 const TEKLA_BIN = process.env.TEKLA_BIN_PATH ||
-  'C:\\Program Files\\Tekla Structures\\2020.0\\nt\\bin';
+  'C:\\Program Files\\Tekla Structures\\2020.0\\nt\\bin\\plugins';
 
-// Cargar assemblies de Tekla
-edge.assemblies([
+const TEKLA_REFS = [
+  path.join(TEKLA_BIN, 'Tekla.Structures.dll'),
   path.join(TEKLA_BIN, 'Tekla.Structures.Model.dll'),
   path.join(TEKLA_BIN, 'Tekla.Structures.Geometry3d.Compatibility.dll'),
-]);
+];
 
 const checkConnection = edge.func({
-  source: function () {/*
+  references: TEKLA_REFS,
+  source: `
     using System.Threading.Tasks;
     using Tekla.Structures.Model;
 
@@ -23,16 +24,15 @@ const checkConnection = edge.func({
             {
                 var model = new Model();
                 var connected = model.GetConnectionStatus();
-                var name = connected ? model.GetName() : "";
-                return new { connected, name };
+                return new { connected };
             }
             catch
             {
-                return new { connected = false, name = "" };
+                return new { connected = false };
             }
         }
     }
-  */}
+  `
 });
 
 module.exports = { checkConnection };

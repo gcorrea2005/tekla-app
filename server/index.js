@@ -16,9 +16,12 @@ app.use(express.json());
 
 app.get('/api/status', async (req, res) => {
   try {
+    console.log('Calling checkConnection...');
     const result = await checkConnection({});
+    console.log('checkConnection result:', result);
     res.json(result);
   } catch (err) {
+    console.error('checkConnection error:', err);
     res.status(500).json({ connected: false, error: err.message });
   }
 });

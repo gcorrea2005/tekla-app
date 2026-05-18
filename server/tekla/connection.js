@@ -2,17 +2,20 @@ const edge = require('edge-js');
 const path = require('path');
 
 const TEKLA_BIN = process.env.TEKLA_BIN_PATH ||
-  'C:\\Program Files\\Tekla Structures\\2020.0\\nt\\bin';
+  'C:\\Program Files\\Tekla Structures\\2020.0\\nt\\bin\\plugins';
 
-edge.assemblies([
+const TEKLA_REFS = [
+  path.join(TEKLA_BIN, 'Tekla.Structures.dll'),
   path.join(TEKLA_BIN, 'Tekla.Structures.Model.dll'),
   path.join(TEKLA_BIN, 'Tekla.Structures.Geometry3d.Compatibility.dll'),
-]);
+];
 
 const applyConnection = edge.func({
-  source: function () {/*
+  references: TEKLA_REFS,
+  source: `
     using System;
     using System.Threading.Tasks;
+    using Tekla.Structures;
     using Tekla.Structures.Model;
 
     public class Startup
@@ -64,13 +67,15 @@ const applyConnection = edge.func({
             }
         }
     }
-  */}
+  `
 });
 
 const applyConnectionWithParams = edge.func({
-  source: function () {/*
+  references: TEKLA_REFS,
+  source: `
     using System;
     using System.Threading.Tasks;
+    using Tekla.Structures;
     using Tekla.Structures.Model;
 
     public class Startup
@@ -122,13 +127,15 @@ const applyConnectionWithParams = edge.func({
             }
         }
     }
-  */}
+  `
 });
 
 const deleteConnection = edge.func({
-  source: function () {/*
+  references: TEKLA_REFS,
+  source: `
     using System;
     using System.Threading.Tasks;
+    using Tekla.Structures;
     using Tekla.Structures.Model;
 
     public class Startup
@@ -162,7 +169,7 @@ const deleteConnection = edge.func({
             }
         }
     }
-  */}
+  `
 });
 
 module.exports = { applyConnection, applyConnectionWithParams, deleteConnection };

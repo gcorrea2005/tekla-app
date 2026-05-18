@@ -2,15 +2,17 @@ const edge = require('edge-js');
 const path = require('path');
 
 const TEKLA_BIN = process.env.TEKLA_BIN_PATH ||
-  'C:\\Program Files\\Tekla Structures\\2020.0\\nt\\bin';
+  'C:\\Program Files\\Tekla Structures\\2020.0\\nt\\bin\\plugins';
 
-edge.assemblies([
+const TEKLA_REFS = [
+  path.join(TEKLA_BIN, 'Tekla.Structures.dll'),
   path.join(TEKLA_BIN, 'Tekla.Structures.Model.dll'),
   path.join(TEKLA_BIN, 'Tekla.Structures.Geometry3d.Compatibility.dll'),
-]);
+];
 
 const getAllBeams = edge.func({
-  source: function () {/*
+  references: TEKLA_REFS,
+  source: `
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
@@ -35,7 +37,7 @@ const getAllBeams = edge.func({
                     var beam = enumerator.Current as Beam;
                     if (beam == null) continue;
 
-                    var item = new Dictionary<string, object>
+                    result.Add(new Dictionary<string, object>
                     {
                         { "id", beam.Identifier.ID },
                         { "name", beam.Name },
@@ -48,8 +50,7 @@ const getAllBeams = edge.func({
                         { "endY", beam.EndPoint.Y },
                         { "endZ", beam.EndPoint.Z },
                         { "class", beam.Class ?? "" }
-                    };
-                    result.Add(item);
+                    });
                 }
             }
             catch (Exception ex)
@@ -62,11 +63,12 @@ const getAllBeams = edge.func({
             return result;
         }
     }
-  */}
+  `
 });
 
 const getAllColumns = edge.func({
-  source: function () {/*
+  references: TEKLA_REFS,
+  source: `
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
@@ -84,28 +86,28 @@ const getAllColumns = edge.func({
                     return result;
 
                 var enumerator = model.GetModelObjectSelector()
-                    .GetAllObjectsWithType(ModelObject.ModelObjectEnum.COLUMN);
+                    .GetAllObjectsWithType(ModelObject.ModelObjectEnum.BEAM);
 
                 while (enumerator.MoveNext())
                 {
-                    var col = enumerator.Current as Beam;
-                    if (col == null) continue;
+                    var beam = enumerator.Current as Beam;
+                    if (beam == null) continue;
+                    if (beam.Name != "COLUMN") continue;
 
-                    var item = new Dictionary<string, object>
+                    result.Add(new Dictionary<string, object>
                     {
-                        { "id", col.Identifier.ID },
-                        { "name", col.Name },
-                        { "profile", col.Profile.ProfileString ?? "" },
-                        { "material", col.Material.MaterialString ?? "" },
-                        { "startX", col.StartPoint.X },
-                        { "startY", col.StartPoint.Y },
-                        { "startZ", col.StartPoint.Z },
-                        { "endX", col.EndPoint.X },
-                        { "endY", col.EndPoint.Y },
-                        { "endZ", col.EndPoint.Z },
-                        { "class", col.Class ?? "" }
-                    };
-                    result.Add(item);
+                        { "id", beam.Identifier.ID },
+                        { "name", beam.Name },
+                        { "profile", beam.Profile.ProfileString ?? "" },
+                        { "material", beam.Material.MaterialString ?? "" },
+                        { "startX", beam.StartPoint.X },
+                        { "startY", beam.StartPoint.Y },
+                        { "startZ", beam.StartPoint.Z },
+                        { "endX", beam.EndPoint.X },
+                        { "endY", beam.EndPoint.Y },
+                        { "endZ", beam.EndPoint.Z },
+                        { "class", beam.Class ?? "" }
+                    });
                 }
             }
             catch (Exception ex)
@@ -118,11 +120,12 @@ const getAllColumns = edge.func({
             return result;
         }
     }
-  */}
+  `
 });
 
 const getAllObjects = edge.func({
-  source: function () {/*
+  references: TEKLA_REFS,
+  source: `
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
@@ -139,38 +142,31 @@ const getAllObjects = edge.func({
                 if (!model.GetConnectionStatus())
                     return result;
 
-                var types = new[]
-                {
-                    ModelObject.ModelObjectEnum.BEAM,
-                    ModelObject.ModelObjectEnum.COLUMN
-                };
+                var enumerator = model.GetModelObjectSelector()
+                    .GetAllObjectsWithType(ModelObject.ModelObjectEnum.BEAM);
 
-                foreach (var type in types)
+                while (enumerator.MoveNext())
                 {
-                    var enumerator = model.GetModelObjectSelector()
-                        .GetAllObjectsWithType(type);
+                    var obj = enumerator.Current as Beam;
+                    if (obj == null) continue;
 
-                    while (enumerator.MoveNext())
+                    var objType = obj.Name == "COLUMN" ? "COLUMN" : "BEAM";
+
+                    result.Add(new Dictionary<string, object>
                     {
-                        var obj = enumerator.Current as Beam;
-                        if (obj == null) continue;
-
-                        result.Add(new Dictionary<string, object>
-                        {
-                            { "id", obj.Identifier.ID },
-                            { "name", obj.Name },
-                            { "type", type.ToString() },
-                            { "profile", obj.Profile.ProfileString ?? "" },
-                            { "material", obj.Material.MaterialString ?? "" },
-                            { "startX", obj.StartPoint.X },
-                            { "startY", obj.StartPoint.Y },
-                            { "startZ", obj.StartPoint.Z },
-                            { "endX", obj.EndPoint.X },
-                            { "endY", obj.EndPoint.Y },
-                            { "endZ", obj.EndPoint.Z },
-                            { "class", obj.Class ?? "" }
-                        });
-                    }
+                        { "id", obj.Identifier.ID },
+                        { "name", obj.Name },
+                        { "type", objType },
+                        { "profile", obj.Profile.ProfileString ?? "" },
+                        { "material", obj.Material.MaterialString ?? "" },
+                        { "startX", obj.StartPoint.X },
+                        { "startY", obj.StartPoint.Y },
+                        { "startZ", obj.StartPoint.Z },
+                        { "endX", obj.EndPoint.X },
+                        { "endY", obj.EndPoint.Y },
+                        { "endZ", obj.EndPoint.Z },
+                        { "class", obj.Class ?? "" }
+                    });
                 }
             }
             catch (Exception ex)
@@ -183,7 +179,7 @@ const getAllObjects = edge.func({
             return result;
         }
     }
-  */}
+  `
 });
 
 module.exports = { getAllBeams, getAllColumns, getAllObjects };

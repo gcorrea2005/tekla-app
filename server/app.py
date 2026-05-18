@@ -26,6 +26,9 @@ COMPONENT_CATALOG = [
     {"number": 134, "name": "Column Seat", "category": "Beam to Column"},
     {"number": 142, "name": "Stiffened End Plate", "category": "Beam to Column"},
     {"number": 146, "name": "Bolted Bracket", "category": "Beam to Column"},
+    {"number": 80, "name": "Purlin Clip Angle", "category": "Purlin to Beam"},
+    {"number": 81, "name": "Sleeve Connection", "category": "Beam to Beam"},
+    {"number": 82, "name": "Corner Bracket", "category": "Beam to Column"},
 ]
 
 

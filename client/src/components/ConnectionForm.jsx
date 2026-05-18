@@ -8,6 +8,9 @@ const COMPONENTS = [
   { number: 11, name: 'Splice Plate', category: 'Beam to Beam' },
   { number: 142, name: 'Stiffened End Plate', category: 'Beam to Column' },
   { number: 146, name: 'Bolted Bracket', category: 'Beam to Column' },
+  { number: 80, name: 'Purlin Clip Angle', category: 'Purlin to Beam' },
+  { number: 81, name: 'Sleeve Connection', category: 'Beam to Beam' },
+  { number: 82, name: 'Corner Bracket', category: 'Beam to Column' },
 ];
 
 export function ConnectionForm({ objects, onSubmit, loading }) {

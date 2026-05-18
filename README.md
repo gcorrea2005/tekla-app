@@ -48,7 +48,7 @@ Elimina la necesidad de navegar manualmente por los menus de Tekla para cada con
 | **Seleccion interactiva** | Selecciona elementos haciendo clic en la tabla para usarlos en conexiones |
 | **Conexion individual** | Aplica una conexion entre dos elementos con parametros personalizados (tornillo, placa) |
 | **Aplicacion en lote** | Genera automaticamente conexiones Shear Tab entre todas las combinaciones viga-columna |
-| **Catalogo de conexiones** | 7 tipos de conexion predefinidos: Clip Angle, End Plate, Splice Plate, Shear Tab, Column Seat, Stiffened End Plate, Bolted Bracket |
+| **Catalogo de conexiones** | 10 tipos de conexion predefinidos: Clip Angle, End Plate, Splice Plate, Shear Tab, Column Seat, Stiffened End Plate, Bolted Bracket, Purlin Clip Angle, Sleeve Connection, Corner Bracket |
 | **Resultados detallados** | Resumen visual de conexiones exitosas vs fallidas despues de cada operacion en lote |
 
 ---
@@ -152,6 +152,9 @@ La interfaz estara disponible en `http://localhost:5176`
 | 134 | **Column Seat** | Beam to Column | Asiento de columna |
 | 142 | **Stiffened End Plate** | Beam to Column | Placa final rigidizada |
 | 146 | **Bolted Bracket** | Beam to Column | Cartela atornillada |
+| 80 | **Purlin Clip Angle** | Purlin to Beam | Angulo de clip para correas |
+| 81 | **Sleeve Connection** | Beam to Beam | Conexion manguito |
+| 82 | **Corner Bracket** | Beam to Column | Cartela de esquina |
 
 ---
 

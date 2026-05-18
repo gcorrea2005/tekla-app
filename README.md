@@ -9,11 +9,12 @@
 ![Vite](https://img.shields.io/badge/Vite-5-646CFF?style=for-the-badge&logo=vite&logoColor=white)
 ![Node.js](https://img.shields.io/badge/Node.js-24-339933?style=for-the-badge&logo=node.js&logoColor=white)
 ![edge-js](https://img.shields.io/badge/edge--js-.NET-512BD4?style=for-the-badge&logo=.net&logoColor=white)
+![OneDrive](https://img.shields.io/badge/OneDrive-Graph_API-0078D4?style=for-the-badge&logo=microsoft-onedrive&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
 
 <br/>
 
-[Descripcion](#descripcion) · [Caracteristicas](#caracteristicas) · [Instalacion](#instalacion) · [Uso](#uso) · [API](#referencia-api) · [Arquitectura](#arquitectura)
+[Descripcion](#descripcion) · [Caracteristicas](#caracteristicas) · [Instalacion](#instalacion) · [Uso](#uso) · [Modo Remoto](#modo-remoto-onedrive) · [API](#referencia-api) · [Arquitectura](#arquitectura)
 
 </div>
 
@@ -21,18 +22,28 @@
 
 ## Descripcion
 
-**Tekla Connection Manager** es una aplicacion web full-stack que permite aplicar y gestionar conexiones estructurales (placas de cortante, placas finales, angulos de clip, etc.) directamente desde el navegador, comunicandose en tiempo real con un modelo abierto en **Tekla Structures 2020**.
+**Tekla Connection Manager** es una aplicacion web full-stack que permite aplicar y gestionar conexiones estructurales (placas de cortante, placas finales, angulos de clip, etc.) directamente desde el navegador.
 
-Elimina la necesidad de navegar manualmente por los menus de Tekla para cada conexion. Desde una sola interfaz puedes ver todos los elementos de tu modelo, seleccionar vigas y columnas, elegir el tipo de conexion y aplicarla con un clic — o generar cientos de conexiones en lote.
+Funciona en dos modos:
+- **Local** — comunicacion en tiempo real con Tekla Structures 2020 abierto via edge-js
+- **Remoto** — lectura de archivos IFC desde OneDrive via Microsoft Graph API (sin necesidad de tener Tekla abierto)
+
+Desde una sola interfaz puedes ver todos los elementos de tu modelo, buscar y filtrar por perfil o nivel, seleccionar vigas y columnas, elegir el tipo de conexion y aplicarla con un clic — o generar cientos de conexiones en lote.
 
 <div align="center">
 
 ```
-┌─────────────┐      ┌──────────┐      ┌──────────┐      ┌─────────────────┐
-│  Navegador  │ ───▶ │ Vite     │ ───▶ │ Express  │ ───▶ │ Tekla Structures│
-│  React 18   │      │ :5173    │      │ :3001    │      │ 2020 Open API   │
-└─────────────┘      └──────────┘      └──────────┘      └─────────────────┘
-                              proxy /api      edge-js
+                     MODO LOCAL                              MODO REMOTO
+┌─────────────┐      ┌──────────┐      ┌──────────┐   ┌─────────────┐      ┌──────────┐      ┌──────────┐
+│  Navegador  │ ───▶ │ Vite     │ ───▶ │ Express  │   │  Navegador  │ ───▶ │ Vite     │ ───▶ │ Express  │
+│  React 18   │      │ :5173    │      │ :3001    │   │  React 18   │      │ :5173    │      │ :3001    │
+└─────────────┘      └──────────┘      └─────┬────┘   └─────────────┘      └──────────┘      └─────┬────┘
+                              proxy /api    edge-js                                proxy /api    Graph API
+                                             │                                                     │
+                                   ┌─────────▼─────────┐                              ┌────────────▼───────────┐
+                                   │ Tekla Structures   │                              │ OneDrive (archivos IFC)│
+                                   │ 2020 Open API      │                              │ Microsoft Graph API   │
+                                   └────────────────────┘                              └────────────────────────┘
 ```
 
 </div>
@@ -43,14 +54,18 @@ Elimina la necesidad de navegar manualmente por los menus de Tekla para cada con
 
 | Funcionalidad | Descripcion |
 |:---|:---|
+| **Dos modos de operacion** | Toggle **Local** (Tekla en vivo) / **OneDrive** (archivos IFC remotos) |
 | **Estado en tiempo real** | Verifica la conexion con Tekla Structures y muestra el nombre del modelo activo |
-| **Listado de elementos** | Carga vigas del modelo filtradas (sin columnas, placas ni concreto) con nivel, cota, perfil y marca de parte |
+| **Listado de elementos** | Carga vigas filtradas (sin columnas, placas ni concreto) con nivel, cota, perfil y marca de parte |
 | **Carga por seleccion** | Carga solo los elementos seleccionados en Tekla Structures (usa UI.ModelObjectSelector) |
+| **Busqueda y filtrado** | Cuadro de busqueda para filtrar por parte, nivel, cota o perfil en tiempo real |
+| **Conteo de elementos** | Muestra total de elementos y cantidad seleccionados arriba de la tabla |
 | **Seleccion interactiva** | Selecciona elementos haciendo clic en la tabla para usarlos en conexiones |
 | **Conexion individual** | Aplica una conexion entre dos elementos con parametros personalizados (tornillo, placa) |
 | **Aplicacion en lote** | Genera automaticamente conexiones Shear Tab entre todas las combinaciones viga-columna |
 | **Catalogo de conexiones** | 10 tipos de conexion predefinidos: Clip Angle, End Plate, Splice Plate, Shear Tab, Column Seat, Stiffened End Plate, Bolted Bracket, Purlin Clip Angle, Sleeve Connection, Corner Bracket |
 | **Resultados detallados** | Resumen visual de conexiones exitosas vs fallidas despues de cada operacion en lote |
+| **Archivos IFC remotos** | Lee y parsea archivos IFC desde OneDrive sin necesidad de tener Tekla abierto |
 
 ---
 
@@ -128,6 +143,45 @@ Esto levanta ambos servicios simultaneamente:
 
 ---
 
+## Modo Remoto (OneDrive)
+
+El modo remoto permite leer archivos IFC desde una carpeta compartida en OneDrive sin tener Tekla Structures abierto.
+
+### Configuracion
+
+1. Crear una **App Registration** en [Azure Portal](https://portal.azure.com):
+   - Azure Active Directory → App registrations → New registration
+   - Redirect URI: `http://localhost:3001/auth/callback`
+   - Permisos: `Files.Read`, `Files.Read.All` (Microsoft Graph API)
+   - Generar client secret
+
+2. Crear archivo `server/.env`:
+   ```env
+   AZURE_CLIENT_ID=tu_client_id
+   AZURE_CLIENT_SECRET=tu_client_secret
+   AZURE_TENANT_ID=tu_tenant_id
+   ONEDRIVE_FOLDER_PATH=CDE CTIB/2. Compartido/2. estructura/02.Modelos
+   ```
+
+3. Reiniciar el server
+
+### Uso
+
+1. Haz clic en **"OneDrive"** en el toggle de la barra de estado
+2. Se listan los archivos IFC de la carpeta compartida
+3. Haz clic en un archivo para parsearlo y cargar los elementos
+4. Usa la busqueda y seleccion como en modo local
+
+### Stack del modo remoto
+
+| Componente | Tecnologia |
+|:---|:---|
+| **Autenticacion** | OAuth2 con Microsoft Identity (`@azure/msal-node`) |
+| **API** | Microsoft Graph API v1.0 |
+| **Parsing IFC** | `web-ifc` (WebAssembly) |
+
+---
+
 ## Tipos de Conexion
 
 | # | Nombre | Categoria | Descripcion |
@@ -167,6 +221,14 @@ GET /api/beams/selected  → Vigas seleccionadas en Tekla
 GET /api/columns         → Lista de columnas
 GET /api/objects         → Todos los elementos
 GET /api/components      → Catalogo de tipos de conexion
+```
+
+### Remoto (OneDrive)
+
+```
+GET /api/remote/status       → Estado de conexion a OneDrive
+GET /api/remote/ifc-files    → Lista de archivos IFC disponibles
+GET /api/remote/beams?fileId → Vigas extraidas de un archivo IFC
 ```
 
 ### Conexiones
@@ -217,15 +279,18 @@ Respuesta exitosa:
                          │ proxy /api
 ┌────────────────────────▼────────────────────────────────────────┐
 │                    SERVIDOR EXPRESS                              │
-│   Node.js · Express · edge-js                                   │
+│   Node.js · Express · edge-js · @azure/msal-node · web-ifc     │
 │   Puerto 3001                                                   │
 └────────────────────────┬────────────────────────────────────────┘
-                         │ edge-js
-┌────────────────────────▼────────────────────────────────────────┐
-│                   TEKLA OPEN API 2020                            │
-│   .NET DLLs → Tekla.Structures.Model                            │
-│   C:\Program Files\Tekla Structures\2020.0\nt\bin\plugins\      │
-└─────────────────────────────────────────────────────────────────┘
+                    ┌────┴────┐
+                    │         │
+              edge-js       Graph API + web-ifc
+                    │         │
+┌───────────────────▼──┐  ┌───▼───────────────────────────────────┐
+│  TEKLA OPEN API 2020 │  │  ONEDRIVE (archivos IFC)              │
+│  .NET DLLs            │  │  Microsoft Graph API v1.0             │
+│  Tekla.Structures.*   │  │  OAuth2 + web-ifc parser              │
+└───────────────────────┘  └──────────────────────────────────────┘
 ```
 
 ### Estructura del proyecto
@@ -254,10 +319,13 @@ tekla-app/
 │
 ├── server/                         # Backend Node.js + edge-js
 │   ├── index.js                    # Servidor Express con todas las rutas
-│   ├── tekla/                      # Modulos de integracion con Tekla
-│   │   ├── status.js               # Conexion y estado del modelo
+│   ├── .env                        # Config Azure (no commiteado)
+│   ├── tekla/                      # Modulos de integracion con Tekla y OneDrive
+│   │   ├── status.js               # Conexion y estado del modelo Tekla
 │   │   ├── model.js                # Consulta de elementos (vigas, columnas)
-│   │   └── connection.js           # Aplicacion de conexiones
+│   │   ├── connection.js           # Aplicacion de conexiones
+│   │   ├── onedrive.js             # Conexion a OneDrive via Graph API
+│   │   └── ifc-parser.js           # Parsing de archivos IFC (web-ifc)
 │   ├── app.py                      # (Legacy) Servidor Flask no utilizado
 │   └── package.json
 │
@@ -275,6 +343,9 @@ tekla-app/
 | **Vite** como bundler | HMR instantaneo, proxy integrado para desarrollo |
 | **UI.ModelObjectSelector** para seleccion | `model.GetModelObjectSelector()` no tiene `GetSelectedObjects()` en Tekla 2020 |
 | **Filtrado en C#** | Se filtra en el edge-js para no enviar datos innecesarios al cliente |
+| **web-ifc** para parsing IFC | WebAssembly, rapido, no requiere Python ni binarios nativos |
+| **@azure/msal-node** para OAuth2 | SDK oficial de Microsoft para autenticacion con Graph API |
+| **Toggle local/remoto** | Permite usar la app con o sin Tekla abierto |
 
 ---
 
@@ -282,11 +353,13 @@ tekla-app/
 
 | Problema | Causa | Solucion |
 |:---|:---|:---|
-| "Desconectado" en la barra de estado | Tekla no esta abierto o sin modelo | Abre Tekla 2020 y carga un modelo |
+| "Desconectado" en modo Local | Tekla no esta abierto o sin modelo | Abre Tekla 2020 y carga un modelo |
 | "No hay elementos cargados" | No se hizo clic en "Cargar Seleccionados" | Selecciona elementos en Tekla y haz clic en el boton |
 | Error al aplicar conexion | IDs invalidos o elementos incompatibles | Verifica que los IDs existen y son geometricamente compatibles |
 | Puerto 3001 en uso | Otra instancia del servidor corriendo | `npx kill-port 3001 5173` y reinicia |
 | edge-js no encuentra DLLs | Ruta incorrecta a Tekla | Verifica la instalacion en `C:\Program Files\Tekla Structures\2020.0\` |
+| OneDrive no conecta | Faltan credenciales Azure en `.env` | Crea App Registration y completa `server/.env` |
+| No aparecen archivos IFC | Ruta incorrecta en `ONEDRIVE_FOLDER_PATH` | Verifica la ruta en `server/.env` |
 
 ---
 
@@ -298,6 +371,6 @@ MIT
 
 <div align="center">
 
-**Hecho con Python, React y mucho acero estructural**
+**Hecho con Node.js, React y mucho acero estructural**
 
 </div>

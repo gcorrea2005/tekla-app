@@ -50,6 +50,15 @@ def _is_concrete(obj):
         return False
 
 
+def _is_plate(obj):
+    """Check if an object is a plate (profile starts with PL)."""
+    try:
+        profile = (obj.Profile.ProfileString or "").upper()
+        return profile.startswith("PL")
+    except Exception:
+        return False
+
+
 def _get_beam_type(beam):
     """Determine if a beam is a column or beam by class number.
     In Tekla default environments: class 1 = beam, class 2 = column.
@@ -188,12 +197,14 @@ def get_all_columns():
 
 
 def get_all_objects():
-    """Get all beams and columns from the model."""
+    """Get all structural beams from the model (no columns, no plates)."""
     results = []
     try:
         for obj in _get_all_model_objects():
-            if not _is_concrete(obj):
-                results.append(_extract_object(obj))
+            if not _is_concrete(obj) and not _is_plate(obj):
+                obj_type = _get_beam_type(obj)
+                if obj_type == "BEAM":
+                    results.append(_extract_object(obj, "BEAM"))
     except Exception as e:
         results.append({"error": str(e)})
     return results

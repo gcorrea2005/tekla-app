@@ -9,7 +9,10 @@ export default function App() {
   const {
     connected, modelName, objects, components,
     loading, error, results,
+    source, setSource,
+    remoteFiles, selectedFile,
     checkStatus, loadObjects, loadComponents,
+    loadRemoteFiles, loadRemoteBeams,
     applyConnection, applyBatch, clearResults,
   } = useTekla();
 
@@ -20,6 +23,16 @@ export default function App() {
     checkStatus();
     loadComponents();
   }, [checkStatus, loadComponents]);
+
+  useEffect(() => {
+    if (source === 'remote') {
+      loadRemoteFiles();
+    }
+  }, [source, loadRemoteFiles]);
+
+  const handleSourceChange = (newSource) => {
+    setSource(newSource);
+  };
 
   const handleSelect = (id) => {
     setSelected((prev) =>
@@ -35,9 +48,11 @@ export default function App() {
         loading={loading}
         error={error}
         onRefresh={() => { checkStatus(); loadObjects(); }}
+        source={source}
+        onSourceChange={handleSourceChange}
       />
 
-      {!connected && (
+      {source === 'local' && !connected && (
         <div className="not-connected">
           <h2>No conectado a Tekla Structures</h2>
           <p>Asegurate de que Tekla Structures 2020 este abierto con un modelo cargado.</p>
@@ -45,7 +60,46 @@ export default function App() {
         </div>
       )}
 
-      {connected && (
+      {source === 'remote' && (
+        <main>
+          <div className="panel">
+            <div className="panel-header">
+              <h2>Archivos IFC en OneDrive</h2>
+              <button onClick={loadRemoteFiles} disabled={loading}>
+                {loading ? 'Cargando...' : 'Actualizar lista'}
+              </button>
+            </div>
+            {remoteFiles.length === 0 ? (
+              <p className="empty">No se encontraron archivos IFC o no hay conexion a OneDrive.</p>
+            ) : (
+              <div className="file-list">
+                {remoteFiles.map((file) => (
+                  <button
+                    key={file.id}
+                    className={`file-item ${selectedFile === file.id ? 'active' : ''}`}
+                    onClick={() => loadRemoteBeams(file.id)}
+                  >
+                    <span className="file-name">{file.name}</span>
+                    <span className="file-size">{(file.size / 1024 / 1024).toFixed(1)} MB</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {objects.length > 0 && (
+            <BeamTable
+              objects={objects}
+              loading={loading}
+              onLoad={() => {}}
+              selected={selected}
+              onSelect={handleSelect}
+            />
+          )}
+        </main>
+      )}
+
+      {source === 'local' && connected && (
         <main>
           <BeamTable
             objects={objects}

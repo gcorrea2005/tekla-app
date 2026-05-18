@@ -40,6 +40,35 @@ body {
   color: #00bfff;
 }
 
+.source-toggle {
+  display: flex;
+  gap: 4px;
+  background: #0f1419;
+  border-radius: 8px;
+  padding: 3px;
+}
+
+.toggle-btn {
+  padding: 6px 14px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: #8899aa;
+  font-size: 0.85em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.toggle-btn:hover {
+  color: #e1e8ed;
+}
+
+.toggle-btn.active {
+  background: #00bfff;
+  color: #0f1419;
+}
+
 .status-badge {
   padding: 4px 12px;
   border-radius: 20px;
@@ -188,6 +217,44 @@ button:disabled {
 .table-stats .selected-count {
   color: #00bfff;
   font-weight: 600;
+}
+
+.file-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.file-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: #0f1419;
+  border: 1px solid #2a3a4a;
+  border-radius: 8px;
+  color: #e1e8ed;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.file-item:hover {
+  border-color: #00bfff;
+  background: rgba(0, 191, 255, 0.05);
+}
+
+.file-item.active {
+  border-color: #00bfff;
+  background: rgba(0, 191, 255, 0.1);
+}
+
+.file-name {
+  font-weight: 500;
+}
+
+.file-size {
+  color: #8899aa;
+  font-size: 0.85em;
 }
 
 .empty {

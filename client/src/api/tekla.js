@@ -18,6 +18,11 @@ export const teklaApi = {
   // Components
   getComponents: () => api.get('/components'),
 
+  // Remote (OneDrive IFC)
+  getRemoteStatus: () => api.get('/remote/status'),
+  getRemoteFiles: () => api.get('/remote/ifc-files'),
+  getRemoteBeams: (fileId) => api.get('/remote/beams', { params: { fileId } }),
+
   // Connections
   applyConnection: (data) => api.post('/connections', data),
   applyAdvanced: (data) => api.post('/connections/advanced', data),

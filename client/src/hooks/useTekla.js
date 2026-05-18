@@ -9,6 +9,9 @@ export function useTekla() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [results, setResults] = useState([]);
+  const [source, setSource] = useState('local'); // 'local' | 'remote'
+  const [remoteFiles, setRemoteFiles] = useState([]);
+  const [selectedFile, setSelectedFile] = useState(null);
 
   const checkStatus = useCallback(async () => {
     try {
@@ -29,6 +32,37 @@ export function useTekla() {
     try {
       const { data } = await teklaApi.getSelectedBeams();
       setObjects(data);
+      return data;
+    } catch (err) {
+      setError(err.message);
+      return [];
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const loadRemoteFiles = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const { data } = await teklaApi.getRemoteFiles();
+      setRemoteFiles(data);
+      return data;
+    } catch (err) {
+      setError(err.message);
+      return [];
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const loadRemoteBeams = useCallback(async (fileId) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const { data } = await teklaApi.getRemoteBeams(fileId);
+      setObjects(data);
+      setSelectedFile(fileId);
       return data;
     } catch (err) {
       setError(err.message);
@@ -86,7 +120,10 @@ export function useTekla() {
   return {
     connected, modelName, objects, components,
     loading, error, results,
+    source, setSource,
+    remoteFiles, selectedFile,
     checkStatus, loadObjects, loadComponents,
+    loadRemoteFiles, loadRemoteBeams,
     applyConnection, applyBatch, clearResults,
   };
 }

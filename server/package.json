@@ -7,9 +7,11 @@
     "dev": "node --watch index.js"
   },
   "dependencies": {
+    "@azure/msal-node": "^5.2.1",
     "cors": "^2.8.5",
-    "dotenv": "^16.4.5",
+    "dotenv": "^16.6.1",
     "edge-js": "^26.0.0",
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "web-ifc": "^0.0.77"
   }
 }

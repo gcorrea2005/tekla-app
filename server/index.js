@@ -5,6 +5,8 @@ const cors = require('cors');
 const { checkConnection } = require('./tekla/status');
 const { getAllBeams, getAllColumns, getAllObjects, getSelectedBeams } = require('./tekla/model');
 const { applyConnection, applyConnectionWithParams, deleteConnection } = require('./tekla/connection');
+const { listIfcFiles, downloadIfcFile, checkConnection: checkOnedrive } = require('./tekla/onedrive');
+const { parseIfcBuffer } = require('./tekla/ifc-parser');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -148,6 +150,42 @@ app.delete('/api/connections/:id', async (req, res) => {
     res.json(result);
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// ==================== REMOTE (OneDrive IFC) ====================
+
+app.get('/api/remote/status', async (req, res) => {
+  try {
+    const result = await checkOnedrive();
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ connected: false, error: err.message });
+  }
+});
+
+app.get('/api/remote/ifc-files', async (req, res) => {
+  try {
+    const files = await listIfcFiles();
+    res.json(files);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/remote/beams', async (req, res) => {
+  const { fileId } = req.query;
+
+  if (!fileId) {
+    return res.status(400).json({ error: 'fileId is required' });
+  }
+
+  try {
+    const buffer = await downloadIfcFile(fileId);
+    const beams = await parseIfcBuffer(buffer);
+    res.json(beams);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 
